@@ -1,0 +1,15 @@
+name: ws
+
+environment:
+  sdk: ^3.11.1
+
+workspace:
+  - packages/*
+
+dev_dependencies:
+  melos: ^7.5.0
+  very_good_analysis: ^10.2.0
+
+melos:
+  sdkPath: .fvm/flutter_sdk
+  repository: https://github.com/albinpk/widget_theme
