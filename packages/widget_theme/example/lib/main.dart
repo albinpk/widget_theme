@@ -17,9 +17,14 @@ class MyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = MyWidgetTheme.of(context);
+
     return Padding(
-      padding: padding ?? const EdgeInsets.all(8),
-      child: Text('Hello world!', style: TextStyle(color: color)),
+      padding: padding ?? theme.padding ?? const EdgeInsets.all(8),
+      child: Text(
+        'Hello world!',
+        style: TextStyle(color: color ?? theme.color),
+      ),
     );
   }
 }
@@ -32,8 +37,11 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: Scaffold(
-        body: Center(child: MyWidget()),
+      home: MyWidgetTheme(
+        data: .new(color: Colors.red, padding: .zero),
+        child: Scaffold(
+          body: Center(child: MyWidget()),
+        ),
       ),
     );
   }
