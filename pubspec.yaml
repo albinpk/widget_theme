@@ -5,6 +5,7 @@ environment:
 
 workspace:
   - packages/*
+  - packages/*/example
 
 dev_dependencies:
   melos: ^7.5.0
