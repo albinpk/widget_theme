@@ -2,7 +2,8 @@ builders:
   widget_theme:
     import: "package:widget_theme/widget_theme.dart"
     builder_factories: ["widgetThemeBuilder"]
-    build_extensions: { ".dart": ["theme.g.dart"] }
+    applies_builders: ["source_gen|combining_builder"]
+    build_extensions: { ".dart": ["theme.g.part"] }
     auto_apply: dependents
-    build_to: source
-    runs_before: ["freezed|freezed"]
+    build_to: cache
+    # runs_before: ["freezed|freezed"]

@@ -1,8 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:widget_theme_annotation/widget_theme_annotation.dart';
 
-part 'main.freezed.dart';
-part 'main.theme.dart';
+part 'main.g.dart';
 
 @widgetTheme
 class MyWidget extends StatelessWidget {
@@ -17,13 +17,13 @@ class MyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = MyWidgetTheme.of(context);
+    final theme = MyWidgetTheme.of(context)._mergeWidget(this);
 
     return Padding(
-      padding: padding ?? theme.padding ?? const EdgeInsets.all(8),
+      padding: theme.padding ?? const EdgeInsets.all(8),
       child: Text(
         'Hello world!',
-        style: TextStyle(color: color ?? theme.color),
+        style: TextStyle(color: theme.color),
       ),
     );
   }
@@ -36,12 +36,14 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: MyWidgetTheme(
-        data: .new(color: Colors.red, padding: .zero),
-        child: Scaffold(
-          body: Center(child: MyWidget()),
-        ),
+    return MaterialApp(
+      theme: ThemeData(
+        extensions: const [
+          MyWidgetTheme(color: Colors.red),
+        ],
+      ),
+      home: const Scaffold(
+        body: Center(child: MyWidget()),
       ),
     );
   }

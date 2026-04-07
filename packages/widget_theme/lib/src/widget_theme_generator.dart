@@ -23,20 +23,25 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
     if (element case final ClassElement element when _isWidget(element)) {
       final meta = annotation.parse(options);
       final generated = Library((l) {
-        l
-          ..ignoreForFile.add('unreachable_from_main')
-          ..body.addAll([
-            _buildThemeClass(
-              element: element,
-              buildStep: buildStep,
-              meta: meta,
-            ),
-            _buildThemeDataClass(
-              element: element,
-              buildStep: buildStep,
-              meta: meta,
-            ),
-          ]);
+        l.body.addAll([
+          _buildThemeExtensionClass(
+            element: element,
+            buildStep: buildStep,
+            meta: meta,
+          ),
+          _buildContextExtension(element),
+          _buildThemeDataExtension(element),
+          // _buildThemeClass(
+          //   element: element,
+          //   buildStep: buildStep,
+          //   meta: meta,
+          // ),
+          // _buildThemeDataClass(
+          //   element: element,
+          //   buildStep: buildStep,
+          //   meta: meta,
+          // ),
+        ]);
       });
 
       final emitter = DartEmitter(
@@ -195,6 +200,289 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
                   });
                 }),
               );
+          }),
+        );
+    });
+  }
+
+  Class _buildThemeExtensionClass({
+    required ClassElement element,
+    required BuildStep buildStep,
+    required WidgetTheme meta,
+  }) {
+    final widgetName = element.name!;
+    final className = '${element.name!}Theme';
+    final props = element.getters.where((e) => e.returnType.isNullable);
+
+    return Class((c) {
+      c
+        // class
+        ..name = className
+        ..extend = Reference('ThemeExtension<$className>')
+        ..mixins.add(const Reference('Diagnosticable'))
+        ..annotations.add(const CodeExpression(Code('immutable')))
+        // constructor
+        ..constructors.add(
+          Constructor((c) {
+            c
+              ..constant = true
+              ..optionalParameters.addAll(
+                props.map((e) {
+                  return Parameter((p) {
+                    p
+                      ..toThis = true
+                      ..name = e.name!
+                      ..named = true;
+                  });
+                }),
+              );
+          }),
+        )
+        // fields
+        ..fields.addAll([
+          // instance fields
+          ...props.map((e) {
+            return Field((f) {
+              f
+                ..name = e.name
+                ..modifier = .final$
+                ..type = Reference(e.returnType.toString());
+            });
+          }),
+        ])
+        ..methods.addAll([
+          // copyWith
+          Method((m) {
+            m
+              ..name = 'copyWith'
+              ..annotations.add(const CodeExpression(Code('override')))
+              ..returns = Reference(className)
+              ..optionalParameters.addAll(
+                props.map((e) {
+                  return Parameter((p) {
+                    p
+                      ..name = e.name!
+                      ..type = Reference(e.returnType.nullable)
+                      ..named = true;
+                  });
+                }),
+              )
+              ..lambda = true
+              ..body = Code(
+                "$className(${props.map((e) {
+                  return '${e.name}: ${e.name} ?? this.${e.name}';
+                }).join(',')})",
+              );
+          }),
+
+          // lerp
+          Method((m) {
+            m
+              ..name = 'lerp'
+              ..annotations.add(const CodeExpression(Code('override')))
+              ..returns = Reference(className)
+              ..requiredParameters.addAll([
+                Parameter((p) {
+                  p
+                    ..name = 'other'
+                    ..type = Reference('$className?');
+                }),
+                Parameter((p) {
+                  p
+                    ..name = 't'
+                    ..type = const Reference('double');
+                }),
+              ])
+              ..body = Code('''
+                if (other is! $className) return this;
+                return $className(${props.map((e) {
+                return '${e.name}: ${switch (e.returnType.nonNull) {
+                  'double' => 'lerpDouble(${e.name}, other.${e.name}, t)${e.returnType.isNullable ? '' : '!'}',
+                  _ => () {
+                    if (e.returnType.element?.name == 'WidgetStateProperty') {
+                      if (e.returnType case ParameterizedType(:final typeArguments)) {
+                        if (typeArguments.isEmpty) throw Exception('WidgetStateProperty without type parameters is not supported');
+                        final t = typeArguments.first;
+                        return '''
+                          WidgetStateProperty.lerp<$t>(
+                            ${e.name},
+                            other.${e.name},
+                            t,
+                            ${t.nonNull}.lerp,
+                          )${e.returnType.isNullable ? '' : '!'}''';
+                      }
+                    }
+                    return '${e.returnType.nonNull}.lerp(${e.name}, other.${e.name}, t)${e.returnType.isNullable ? '' : '!'}';
+                  }(),
+                }}';
+              }).join(',')});''');
+          }),
+
+          Method((m) {
+            m
+              ..name = 'maybeOf'
+              ..static = true
+              ..returns = Reference('$className?')
+              ..requiredParameters.add(
+                Parameter((p) {
+                  p
+                    ..name = 'context'
+                    ..type = const Reference('BuildContext');
+                }),
+              )
+              ..lambda = true
+              ..body = Code('Theme.of(context).extension<$className>()');
+          }),
+
+          // of
+          Method((m) {
+            m
+              ..name = 'of'
+              ..static = true
+              ..returns = Reference(className)
+              ..requiredParameters.add(
+                Parameter((p) {
+                  p
+                    ..name = 'context'
+                    ..type = const Reference('BuildContext');
+                }),
+              )
+              ..body = Code('''
+                  final data = maybeOf(context);
+                  if (data == null) {
+                    throw FlutterError('No $className found in the widget tree');
+                  }
+                  return data;
+                ''');
+          }),
+
+          // _mergeWidget
+          Method((m) {
+            m
+              ..name = '_mergeWidget'
+              ..returns = Reference(className)
+              ..requiredParameters.add(
+                Parameter((p) {
+                  p
+                    ..name = 'widget'
+                    ..type = Reference(widgetName);
+                }),
+              )
+              ..body = Code('''
+              return copyWith(
+              ${props.map((p) {
+                return '${p.name}: widget.${p.name}';
+              }).join(',')}
+              );
+                ''');
+          }),
+
+          // == operator
+          Method((m) {
+            m
+              ..name = 'operator =='
+              ..annotations.add(const CodeExpression(Code('override')))
+              ..returns = const Reference('bool')
+              ..requiredParameters.add(
+                Parameter((p) {
+                  p
+                    ..name = 'other'
+                    ..type = const Reference('Object');
+                }),
+              )
+              ..body = Code('''
+                if (identical(this, other)) return true;
+                if (other.runtimeType != runtimeType) return false;
+                return other is $className &&
+                ${props.map((e) {
+                return "other.${e.name} == ${e.name}";
+              }).join('&&')};''');
+          }),
+
+          // hashCode
+          Method((m) {
+            m
+              ..name = 'hashCode'
+              ..type = .getter
+              ..annotations.add(const CodeExpression(Code('override')))
+              ..returns = const Reference('int')
+              ..lambda = true;
+            // use Object.hashAll if there are more than 19 fields
+            if (props.length > 19) {
+              m.body = Code('''
+                Object.hashAll([
+                  runtimeType,
+                  ${props.map((e) => e.name).join(', ')}
+                ])''');
+            } else {
+              m.body = Code('''
+                Object.hash(
+                  runtimeType,
+                  ${props.map((e) => e.name).join(', ')}
+                )''');
+            }
+          }),
+
+          // debugFillProperties
+          Method.returnsVoid((m) {
+            m
+              ..name = 'debugFillProperties'
+              ..annotations.add(const CodeExpression(Code('override')))
+              ..requiredParameters.add(
+                Parameter((p) {
+                  p
+                    ..name = 'properties'
+                    ..type = const Reference('DiagnosticPropertiesBuilder');
+                }),
+              )
+              ..body = Code('''
+                super.debugFillProperties(properties);
+                properties..
+                ${props.map((e) {
+                return "add(DiagnosticsProperty<${e.returnType.nonNull}>('${e.name}', ${e.name}))";
+              }).join('..')};''');
+          }),
+        ]);
+    });
+  }
+
+  Extension _buildContextExtension(ClassElement element) {
+    final className = '${element.name!}Theme';
+    return Extension((e) {
+      e
+        ..name = '${className}BuildContextX'
+        ..on = const Reference('BuildContext')
+        ..methods.add(
+          Method((f) {
+            final getterName =
+                className[0].toLowerCase() + className.substring(1);
+            f
+              ..name = getterName
+              ..returns = Reference(className)
+              ..type = .getter
+              ..lambda = true
+              ..body = Code(
+                '${className}ThemeDataX(Theme.of(this)).$getterName',
+              );
+          }),
+        );
+    });
+  }
+
+  Extension _buildThemeDataExtension(ClassElement element) {
+    final className = '${element.name!}Theme';
+    return Extension((e) {
+      e
+        ..name = '${className}ThemeDataX'
+        ..on = const Reference('ThemeData')
+        ..methods.add(
+          Method((f) {
+            f
+              ..name = '${className[0].toLowerCase()}${className.substring(1)}'
+              ..returns = Reference(className)
+              ..type = .getter
+              ..lambda = true
+              ..body = Code('extension<$className>()!');
           }),
         );
     });
