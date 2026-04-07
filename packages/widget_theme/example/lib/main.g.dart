@@ -40,9 +40,18 @@ class MyWidgetTheme extends ThemeExtension<MyWidgetTheme> with Diagnosticable {
     return data;
   }
 
-  MyWidgetTheme _mergeWidget(MyWidget widget) {
-    return copyWith(color: widget.color, padding: widget.padding);
-  }
+  MyWidgetTheme _mergeWidget(MyWidget widget) =>
+      copyWith(color: widget.color, padding: widget.padding);
+
+  static Widget overrideWith({
+    required MyWidgetTheme data,
+    required Widget child,
+  }) => Builder(
+    builder: (context) => Theme(
+      data: Theme.of(context).copyWith(extensions: [data]),
+      child: child,
+    ),
+  );
 
   @override
   bool operator ==(Object other) {

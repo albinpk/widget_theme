@@ -64,15 +64,23 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
     return data;
   }
 
-  MyButtonTheme _mergeWidget(MyButton widget) {
-    return copyWith(
-      textStyle: widget.textStyle,
-      backgroundColor: widget.backgroundColor,
-      foregroundColor: widget.foregroundColor,
-      padding: widget.padding,
-      margin: widget.margin,
-    );
-  }
+  MyButtonTheme _mergeWidget(MyButton widget) => copyWith(
+    textStyle: widget.textStyle,
+    backgroundColor: widget.backgroundColor,
+    foregroundColor: widget.foregroundColor,
+    padding: widget.padding,
+    margin: widget.margin,
+  );
+
+  static Widget overrideWith({
+    required MyButtonTheme data,
+    required Widget child,
+  }) => Builder(
+    builder: (context) => Theme(
+      data: Theme.of(context).copyWith(extensions: [data]),
+      child: child,
+    ),
+  );
 
   @override
   bool operator ==(Object other) {

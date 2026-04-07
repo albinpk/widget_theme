@@ -15,11 +15,11 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
   final BuilderOptions options;
 
   @override
-  Future<String?> generateForAnnotatedElement(
+  String? generateForAnnotatedElement(
     Element element,
     ConstantReader annotation,
     BuildStep buildStep,
-  ) async {
+  ) {
     if (element case final ClassElement element when _isWidget(element)) {
       final meta = annotation.parse(options);
       final generated = Library((l) {
@@ -361,6 +361,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
             m
               ..name = '_mergeWidget'
               ..returns = Reference(className)
+              ..lambda = true
               ..requiredParameters.add(
                 Parameter((p) {
                   p
@@ -369,12 +370,43 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
                 }),
               )
               ..body = Code('''
-              return copyWith(
+              copyWith(
               ${props.map((p) {
                 return '${p.name}: widget.${p.name}';
               }).join(',')}
-              );
-                ''');
+              )''');
+          }),
+
+          // override
+          Method((m) {
+            m
+              ..name = 'overrideWith'
+              ..returns = const Reference('Widget')
+              ..static = true
+              ..lambda = true
+              ..optionalParameters.addAll([
+                Parameter((p) {
+                  p
+                    ..name = 'data'
+                    ..named = true
+                    ..required = true
+                    ..type = Reference(className);
+                }),
+                Parameter((p) {
+                  p
+                    ..name = 'child'
+                    ..named = true
+                    ..required = true
+                    ..type = const Reference('Widget');
+                }),
+              ])
+              ..body = const Code('''
+                Builder(
+                  builder: (context) => Theme(
+                    data: Theme.of(context).copyWith(extensions: [data]),
+                    child: child,
+                  ),
+                )''');
           }),
 
           // == operator
