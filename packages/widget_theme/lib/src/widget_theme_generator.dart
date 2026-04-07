@@ -58,6 +58,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
     return null;
   }
 
+  /*
   Class _buildThemeClass({
     required ClassElement element,
     required BuildStep buildStep,
@@ -204,6 +205,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
         );
     });
   }
+  */
 
   Class _buildThemeExtensionClass({
     required ClassElement element,
@@ -532,7 +534,7 @@ extension on DartType {
 
 extension on ConstantReader {
   WidgetTheme parse(BuilderOptions options) {
-    final map = options.config;
+    // final map = options.config;
     return const WidgetTheme();
   }
 }
