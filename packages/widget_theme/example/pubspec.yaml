@@ -18,7 +18,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   freezed: ^3.2.5
-  widget_theme: ^0.1.0-dev.3
+  widget_theme: ^0.1.0-dev.4
 
 flutter:
   uses-material-design: true

@@ -2,7 +2,7 @@ name: widget_theme
 description: >
   Code generation utilities for creating widget-specific theme models from
   Flutter widget properties, enabling scalable and consistent theming.
-version: 0.1.0-dev.3
+version: 0.1.0-dev.4
 repository: https://github.com/albinpk/widget_theme
 issue_tracker: https://github.com/albinpk/widget_theme/issues
 

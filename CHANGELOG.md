@@ -11,6 +11,27 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 Packages with breaking changes:
 
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`widget_theme` - `v0.1.0-dev.4`](#widget_theme---v010-dev4)
+
+---
+
+#### `widget_theme` - `v0.1.0-dev.4`
+
+ - **FIX**: update dependency version constraints.
+
+
+## 2026-04-07
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
  - [`widget_theme` - `v0.1.0-dev.3`](#widget_theme---v010-dev3)
 
 Packages with other changes:
