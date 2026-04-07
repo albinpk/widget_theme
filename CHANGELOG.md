@@ -15,6 +15,27 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`widget_theme` - `v0.1.0-dev.5`](#widget_theme---v010-dev5)
+
+---
+
+#### `widget_theme` - `v0.1.0-dev.5`
+
+ - **FIX**: analyzer warning.
+
+
+## 2026-04-07
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`widget_theme` - `v0.1.0-dev.4`](#widget_theme---v010-dev4)
 
 ---

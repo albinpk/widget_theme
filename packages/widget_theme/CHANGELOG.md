@@ -1,3 +1,7 @@
+## 0.1.0-dev.5
+
+ - **FIX**: analyzer warning.
+
 ## 0.1.0-dev.4
 
  - **FIX**: update dependency version constraints.
