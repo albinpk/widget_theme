@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2026-04-07
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - [`widget_theme` - `v0.1.0-dev.3`](#widget_theme---v010-dev3)
+
+Packages with other changes:
+
+ - There are no other changes in this release.
+
+---
+
+#### `widget_theme` - `v0.1.0-dev.3`
+
+ - **FEAT**: add static `overrideWith` method to generated themes.
+ - **BREAKING** **FEAT**: migrate theme generation to use `ThemeExtension` instead of `InheritedWidget`, and add `_mergeWidget` method in theme class.
+
+
 ## 2026-03-26
 
 ### Changes
