@@ -8,3 +8,4 @@ pubspec.lock
 
 # Test cache
 /build/
+/coverage/

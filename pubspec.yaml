@@ -8,6 +8,7 @@ workspace:
   - packages/*/example
 
 dev_dependencies:
+  coverage: ^1.15.0
   melos: ^7.5.0
   very_good_analysis: ^10.2.0
 
@@ -21,3 +22,10 @@ melos:
     test:gen: |
       cd packages/widget_theme
       SOURCE_GEN_TEST_UPDATE_GOLDENS=1 fvm dart test --chain-stack-traces
+    coverage: |
+      # cd packages/widget_theme
+      fvm dart run coverage:format_coverage \
+        --lcov \
+        -i packages/widget_theme/coverage \
+        -o packages/widget_theme/coverage/lcov.info \
+        --report-on=packages/widget_theme/lib
