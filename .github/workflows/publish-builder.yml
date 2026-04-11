@@ -1,4 +1,4 @@
-name: Publish widget_theme
+name: build
 
 on:
   push:
