@@ -2,14 +2,62 @@ name: Publish widget_theme_annotation
 
 on:
   push:
+    # branches: main
     tags:
-      - 'widget_theme_annotation-v[0-9]+.[0-9]+.[0-9]+*'
+      - "widget_theme_annotation-v[0-9]+.[0-9]+.[0-9]+*"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Setup Flutter SDK
+        uses: kuhnroyal/flutter-fvm-config-action/setup@v3
+      - name: Install dependencies
+        run: flutter pub get
+        working-directory: packages/widget_theme_annotation
+
+      - name: Check code format
+        run: dart format --set-exit-if-changed .
+        working-directory: packages/widget_theme_annotation
+
+      - name: Analyze
+        run: flutter analyze
+        working-directory: packages/widget_theme_annotation
+
+      - name: Flutter test
+        run: flutter test --coverage
+        working-directory: packages/widget_theme_annotation
+
+      # - name: Format coverage report
+      #   run: |
+      #     dart run coverage:format_coverage \
+      #       --lcov \
+      #       -i packages/widget_theme_annotation/coverage \
+      #       -o packages/widget_theme_annotation/coverage/lcov.info \
+      #       --report-on=packages/widget_theme_annotation/lib
+
+      # - name: Upload coverage reports to Codecov
+      #   uses: codecov/codecov-action@v5
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     slug: albinpk/widget_theme
+      #     working-directory: packages/widget_theme_annotation
+
+      - name: Publish - dry run
+        run: flutter pub publish --dry-run
+        working-directory: packages/widget_theme_annotation
+
   publish:
+    needs: test
     permissions:
       id-token: write # Required for authentication using OIDC
     uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
     with:
-      environment: 'pub.dev'
+      environment: "pub.dev"
       working-directory: packages/widget_theme_annotation
