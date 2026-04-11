@@ -2,14 +2,45 @@ name: Publish widget_theme
 
 on:
   push:
+    branches: dev
     tags:
-      - 'widget_theme-v[0-9]+.[0-9]+.[0-9]+*'
+      - "widget_theme-v[0-9]+.[0-9]+.[0-9]+*"
 
 jobs:
-  publish:
-    permissions:
-      id-token: write # Required for authentication using OIDC
-    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
-    with:
-      environment: 'pub.dev'
-      working-directory: packages/widget_theme
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Setup Flutter SDK
+        uses: kuhnroyal/flutter-fvm-config-action/setup@v3
+      - name: Install dependencies
+        run: dart pub get
+        working-directory: packages/widget_theme
+      - name: Check code format
+        run: dart format --set-exit-if-changed .
+        working-directory: packages/widget_theme
+      - name: Analyze
+        run: dart analyze
+        working-directory: packages/widget_theme
+      - name: Dart test
+        run: dart test --coverage
+        working-directory: packages/widget_theme
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: albinpk/widget_theme
+          working-directory: packages/widget_theme
+      - name: Publish - dry run
+        run: dart pub publish --dry-run
+        working-directory: packages/widget_theme
+
+  # publish:
+  #   needs: test
+  #   permissions:
+  #     id-token: write # Required for authentication using OIDC
+  #   uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
+  #   with:
+  #     environment: "pub.dev"
+  #     working-directory: packages/widget_theme
