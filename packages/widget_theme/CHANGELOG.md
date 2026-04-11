@@ -1,3 +1,10 @@
+## 0.1.0-dev.6
+
+ - **FIX**: remove `freezed` dependency.
+ - **FIX**: ignore `unused_element` on `_mergeWidget`.
+ - **FEAT**: workflow for test & analyze with codecov.
+ - **DOCS**: add readme.
+
 ## 0.1.0-dev.5
 
  - **FIX**: analyzer warning.

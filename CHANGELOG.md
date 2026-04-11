@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2026-04-11
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`widget_theme` - `v0.1.0-dev.6`](#widget_theme---v010-dev6)
+ - [`widget_theme_annotation` - `v0.1.0-dev.3`](#widget_theme_annotation---v010-dev3)
+
+---
+
+#### `widget_theme` - `v0.1.0-dev.6`
+
+ - **FIX**: remove `freezed` dependency.
+ - **FIX**: ignore `unused_element` on `_mergeWidget`.
+ - **FEAT**: workflow for test & analyze with codecov.
+ - **DOCS**: add readme.
+
+#### `widget_theme_annotation` - `v0.1.0-dev.3`
+
+ - **FIX**: remove `freezed` dependency.
+ - **DOCS**: add doc comment for annotation.
+
+
 ## 2026-04-07
 
 ### Changes

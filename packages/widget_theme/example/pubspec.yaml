@@ -11,13 +11,13 @@ resolution: workspace
 dependencies:
   flutter:
     sdk: flutter
-  widget_theme_annotation: ^0.1.0-dev.2
+  widget_theme_annotation: ^0.1.0-dev.3
 
 dev_dependencies:
   build_runner: ^2.13.1
   flutter_test:
     sdk: flutter
-  widget_theme: ^0.1.0-dev.5
+  widget_theme: ^0.1.0-dev.6
 
 flutter:
   uses-material-design: true
