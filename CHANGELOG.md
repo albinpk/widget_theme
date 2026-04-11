@@ -15,6 +15,33 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`widget_theme` - `v0.1.0`](#widget_theme---v010)
+ - [`widget_theme_annotation` - `v0.1.0`](#widget_theme_annotation---v010)
+
+Packages graduated to a stable release (see pre-releases prior to the stable version for changelog entries):
+
+ - `widget_theme` - `v0.1.0`
+ - `widget_theme_annotation` - `v0.1.0`
+
+---
+
+#### `widget_theme` - `v0.1.0`
+
+#### `widget_theme_annotation` - `v0.1.0`
+
+
+## 2026-04-11
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`widget_theme` - `v0.1.0-dev.6`](#widget_theme---v010-dev6)
  - [`widget_theme_annotation` - `v0.1.0-dev.3`](#widget_theme_annotation---v010-dev3)
 

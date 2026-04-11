@@ -2,7 +2,7 @@ name: widget_theme_annotation
 description: >
   Annotation definitions for widget_theme, used to
   mark Flutter widgets for automatic theme model generation.
-version: 0.1.0-dev.3
+version: 0.1.0
 repository: https://github.com/albinpk/widget_theme
 issue_tracker: https://github.com/albinpk/widget_theme/issues
 
