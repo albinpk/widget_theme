@@ -6,4 +6,3 @@ builders:
     build_extensions: { ".dart": ["theme.g.part"] }
     auto_apply: dependents
     build_to: cache
-    # runs_before: ["freezed|freezed"]
