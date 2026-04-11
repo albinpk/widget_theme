@@ -14,3 +14,10 @@ dev_dependencies:
 melos:
   sdkPath: .fvm/flutter_sdk
   repository: https://github.com/albinpk/widget_theme
+  scripts:
+    test: |
+      cd packages/widget_theme
+      fvm dart test --chain-stack-traces
+    test:gen: |
+      cd packages/widget_theme
+      SOURCE_GEN_TEST_UPDATE_GOLDENS=1 fvm dart test --chain-stack-traces
