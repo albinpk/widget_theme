@@ -40,6 +40,7 @@ class MyWidgetTheme extends ThemeExtension<MyWidgetTheme> with Diagnosticable {
     return data;
   }
 
+  // ignore: unused_element
   MyWidgetTheme _mergeWidget(MyWidget widget) =>
       copyWith(color: widget.color, padding: widget.padding);
 

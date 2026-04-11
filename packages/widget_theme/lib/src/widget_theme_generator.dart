@@ -364,6 +364,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
               ..name = '_mergeWidget'
               ..returns = Reference(className)
               ..lambda = true
+              ..docs.add('// ignore: unused_element')
               ..requiredParameters.add(
                 Parameter((p) {
                   p

@@ -64,6 +64,7 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
     return data;
   }
 
+  // ignore: unused_element
   MyButtonTheme _mergeWidget(MyButton widget) => copyWith(
     textStyle: widget.textStyle,
     backgroundColor: widget.backgroundColor,
