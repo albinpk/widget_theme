@@ -118,8 +118,7 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
 }
 
 extension MyButtonThemeBuildContextX on BuildContext {
-  MyButtonTheme get myButtonTheme =>
-      MyButtonThemeThemeDataX(Theme.of(this)).myButtonTheme;
+  MyButtonTheme get myButtonTheme => Theme.of(this).extension<MyButtonTheme>()!;
 }
 
 extension MyButtonThemeThemeDataX on ThemeData {

@@ -513,7 +513,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
               ..type = .getter
               ..lambda = true
               ..body = Code(
-                '${className}ThemeDataX(Theme.of(this)).$getterName',
+                'Theme.of(this).extension<$className>()!',
               );
           }),
         );
