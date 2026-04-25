@@ -29,8 +29,10 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
             buildStep: buildStep,
             meta: meta,
           ),
-          _buildContextExtension(element),
-          _buildThemeDataExtension(element),
+          if (meta.buildContextExtension ?? true)
+            _buildContextExtension(element: element, meta: meta),
+          if (meta.themeDataExtension ?? true)
+            _buildThemeDataExtension(element: element, meta: meta),
           // _buildThemeClass(
           //   element: element,
           //   buildStep: buildStep,
@@ -213,15 +215,18 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
     required WidgetTheme meta,
   }) {
     final widgetName = element.name!;
-    final className = '${element.name!}Theme';
+    final className = meta.name ?? '${element.name!}Theme';
     final props = element.getters.where((e) => e.returnType.isNullable);
 
     return Class((c) {
       c
         // class
         ..name = className
-        ..extend = Reference('ThemeExtension<$className>')
-        ..mixins.add(const Reference('Diagnosticable'))
+        ..extend = Reference('ThemeExtension<$className>');
+      if (meta.diagnosticable ?? true) {
+        c.mixins.add(const Reference('Diagnosticable'));
+      }
+      c
         ..annotations.add(const CodeExpression(Code('immutable')))
         // constructor
         ..constructors.add(
@@ -320,169 +325,180 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
               }).join(',')});''');
           }),
 
-          Method((m) {
-            m
-              ..name = 'maybeOf'
-              ..static = true
-              ..returns = Reference('$className?')
-              ..requiredParameters.add(
-                Parameter((p) {
-                  p
-                    ..name = 'context'
-                    ..type = const Reference('BuildContext');
-                }),
-              )
-              ..lambda = true
-              ..body = Code('Theme.of(context).extension<$className>()');
-          }),
+          if (meta.staticAccessor ?? true) ...[
+            // maybeOf
+            Method((m) {
+              m
+                ..name = 'maybeOf'
+                ..static = true
+                ..returns = Reference('$className?')
+                ..requiredParameters.add(
+                  Parameter((p) {
+                    p
+                      ..name = 'context'
+                      ..type = const Reference('BuildContext');
+                  }),
+                )
+                ..lambda = true
+                ..body = Code('Theme.of(context).extension<$className>()');
+            }),
 
-          // of
-          Method((m) {
-            m
-              ..name = 'of'
-              ..static = true
-              ..returns = Reference(className)
-              ..requiredParameters.add(
-                Parameter((p) {
-                  p
-                    ..name = 'context'
-                    ..type = const Reference('BuildContext');
-                }),
-              )
-              ..body = Code('''
+            // of
+            Method((m) {
+              m
+                ..name = 'of'
+                ..static = true
+                ..returns = Reference(className)
+                ..requiredParameters.add(
+                  Parameter((p) {
+                    p
+                      ..name = 'context'
+                      ..type = const Reference('BuildContext');
+                  }),
+                )
+                ..body = Code('''
                   final data = maybeOf(context);
                   if (data == null) {
                     throw FlutterError('No $className found in the widget tree');
                   }
                   return data;
                 ''');
-          }),
+            }),
+          ],
 
           // _mergeWidget
-          Method((m) {
-            m
-              ..name = '_mergeWidget'
-              ..returns = Reference(className)
-              ..lambda = true
-              ..docs.add('// ignore: unused_element')
-              ..requiredParameters.add(
-                Parameter((p) {
-                  p
-                    ..name = 'widget'
-                    ..type = Reference(widgetName);
-                }),
-              )
-              ..body = Code('''
+          if (meta.mergeWidgetHelper ?? true)
+            Method((m) {
+              m
+                ..name = '_mergeWidget'
+                ..returns = Reference(className)
+                ..lambda = true
+                ..docs.add('// ignore: unused_element')
+                ..requiredParameters.add(
+                  Parameter((p) {
+                    p
+                      ..name = 'widget'
+                      ..type = Reference(widgetName);
+                  }),
+                )
+                ..body = Code('''
               copyWith(
               ${props.map((p) {
-                return '${p.name}: widget.${p.name}';
-              }).join(',')}
+                  return '${p.name}: widget.${p.name}';
+                }).join(',')}
               )''');
-          }),
+            }),
 
           // override
-          Method((m) {
-            m
-              ..name = 'overrideWith'
-              ..returns = const Reference('Widget')
-              ..static = true
-              ..lambda = true
-              ..optionalParameters.addAll([
-                Parameter((p) {
-                  p
-                    ..name = 'data'
-                    ..named = true
-                    ..required = true
-                    ..type = Reference(className);
-                }),
-                Parameter((p) {
-                  p
-                    ..name = 'child'
-                    ..named = true
-                    ..required = true
-                    ..type = const Reference('Widget');
-                }),
-              ])
-              ..body = const Code('''
+          if (meta.overrideWithHelper ?? true)
+            Method((m) {
+              m
+                ..name = 'overrideWith'
+                ..returns = const Reference('Widget')
+                ..static = true
+                ..lambda = true
+                ..optionalParameters.addAll([
+                  Parameter((p) {
+                    p
+                      ..name = 'data'
+                      ..named = true
+                      ..required = true
+                      ..type = Reference(className);
+                  }),
+                  Parameter((p) {
+                    p
+                      ..name = 'child'
+                      ..named = true
+                      ..required = true
+                      ..type = const Reference('Widget');
+                  }),
+                ])
+                ..body = const Code('''
                 Builder(
                   builder: (context) => Theme(
                     data: Theme.of(context).copyWith(extensions: [data]),
                     child: child,
                   ),
                 )''');
-          }),
+            }),
 
-          // == operator
-          Method((m) {
-            m
-              ..name = 'operator =='
-              ..annotations.add(const CodeExpression(Code('override')))
-              ..returns = const Reference('bool')
-              ..requiredParameters.add(
-                Parameter((p) {
-                  p
-                    ..name = 'other'
-                    ..type = const Reference('Object');
-                }),
-              )
-              ..body = Code('''
+          if (meta.equals ?? true) ...[
+            // == operator
+            Method((m) {
+              m
+                ..name = 'operator =='
+                ..annotations.add(const CodeExpression(Code('override')))
+                ..returns = const Reference('bool')
+                ..requiredParameters.add(
+                  Parameter((p) {
+                    p
+                      ..name = 'other'
+                      ..type = const Reference('Object');
+                  }),
+                )
+                ..body = Code('''
                 if (identical(this, other)) return true;
                 if (other.runtimeType != runtimeType) return false;
                 return other is $className &&
                 ${props.map((e) {
-                return "other.${e.name} == ${e.name}";
-              }).join('&&')};''');
-          }),
+                  return "other.${e.name} == ${e.name}";
+                }).join('&&')};''');
+            }),
 
-          // hashCode
-          Method((m) {
-            m
-              ..name = 'hashCode'
-              ..type = .getter
-              ..annotations.add(const CodeExpression(Code('override')))
-              ..returns = const Reference('int')
-              ..lambda = true;
-            // use Object.hashAll if there are more than 19 fields
-            if (props.length > 19) {
-              m.body = Code('''
+            // hashCode
+            Method((m) {
+              m
+                ..name = 'hashCode'
+                ..type = .getter
+                ..annotations.add(const CodeExpression(Code('override')))
+                ..returns = const Reference('int')
+                ..lambda = true;
+              // use Object.hashAll if there are more than 19 fields
+              if (props.length > 19) {
+                m.body = Code('''
                 Object.hashAll([
                   runtimeType,
                   ${props.map((e) => e.name).join(', ')}
                 ])''');
-            } else {
-              m.body = Code('''
+              } else {
+                m.body = Code('''
                 Object.hash(
                   runtimeType,
                   ${props.map((e) => e.name).join(', ')}
                 )''');
-            }
-          }),
+              }
+            }),
+          ],
 
           // debugFillProperties
-          Method.returnsVoid((m) {
-            m
-              ..name = 'debugFillProperties'
-              ..annotations.add(const CodeExpression(Code('override')))
-              ..requiredParameters.add(
-                Parameter((p) {
-                  p
-                    ..name = 'properties'
-                    ..type = const Reference('DiagnosticPropertiesBuilder');
-                }),
-              )
-              ..body = Code('''
+          if (meta.diagnosticable ?? true)
+            Method.returnsVoid((m) {
+              m
+                ..name = 'debugFillProperties'
+                ..annotations.add(const CodeExpression(Code('override')))
+                ..requiredParameters.add(
+                  Parameter((p) {
+                    p
+                      ..name = 'properties'
+                      ..type = const Reference('DiagnosticPropertiesBuilder');
+                  }),
+                )
+                ..body = Code('''
                 super.debugFillProperties(properties);
                 properties..
                 ${props.map((e) {
-                return "add(DiagnosticsProperty<${e.returnType.nonNull}>('${e.name}', ${e.name}))";
-              }).join('..')};''');
-          }),
+                  return "add(DiagnosticsProperty<${e.returnType.nonNull}>('${e.name}', ${e.name}))";
+                }).join('..')};''');
+            }),
         ]);
     });
   }
 
-  Extension _buildContextExtension(ClassElement element) {
-    final className = '${element.name!}Theme';
+  Extension _buildContextExtension({
+    required ClassElement element,
+    required WidgetTheme meta,
+  }) {
+    final className = meta.name ?? '${element.name!}Theme';
     return Extension((e) {
       e
         ..name = '${className}BuildContextX'
@@ -504,8 +520,11 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
     });
   }
 
-  Extension _buildThemeDataExtension(ClassElement element) {
-    final className = '${element.name!}Theme';
+  Extension _buildThemeDataExtension({
+    required ClassElement element,
+    required WidgetTheme meta,
+  }) {
+    final className = meta.name ?? '${element.name!}Theme';
     return Extension((e) {
       e
         ..name = '${className}ThemeDataX'
@@ -535,8 +554,31 @@ extension on DartType {
 
 extension on ConstantReader {
   WidgetTheme parse(BuilderOptions options) {
-    // final map = options.config;
-    return const WidgetTheme();
+    final map = options.config;
+    return WidgetTheme(
+      name: objectValue.getField('name')?.toStringValue(),
+      staticAccessor:
+          objectValue.getField('staticAccessor')?.toBoolValue() ??
+          map['staticAccessor'] as bool?,
+      mergeWidgetHelper:
+          objectValue.getField('mergeWidgetHelper')?.toBoolValue() ??
+          map['mergeWidgetHelper'] as bool?,
+      overrideWithHelper:
+          objectValue.getField('overrideWithHelper')?.toBoolValue() ??
+          map['overrideWithHelper'] as bool?,
+      diagnosticable:
+          objectValue.getField('diagnosticable')?.toBoolValue() ??
+          map['diagnosticable'] as bool?,
+      equals:
+          objectValue.getField('equals')?.toBoolValue() ??
+          map['equals'] as bool?,
+      buildContextExtension:
+          objectValue.getField('buildContextExtension')?.toBoolValue() ??
+          map['buildContextExtension'] as bool?,
+      themeDataExtension:
+          objectValue.getField('themeDataExtension')?.toBoolValue() ??
+          map['themeDataExtension'] as bool?,
+    );
   }
 }
 

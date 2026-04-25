@@ -4,7 +4,16 @@ import 'package:widget_theme_annotation/widget_theme_annotation.dart';
 
 part 'my_button.g.dart';
 
-@widgetTheme
+@WidgetTheme(
+  // name: 'MyTheme',
+  // staticAccessor: false,
+  // mergeWidgetHelper: false,
+  // overrideWithHelper: false,
+  // diagnosticable: false,
+  // equals: false,
+  // buildContextExtension: false,
+  // themeDataExtension: false,
+)
 class MyButton extends StatelessWidget {
   const MyButton({
     this.textStyle,

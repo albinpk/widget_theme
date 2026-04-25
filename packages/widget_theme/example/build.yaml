@@ -1,0 +1,12 @@
+targets:
+  $default:
+    builders:
+      widget_theme:
+        options:
+          staticAccessor: true
+          mergeWidgetHelper: true
+          overrideWithHelper: true
+          diagnosticable: true
+          equals: true
+          buildContextExtension: true
+          themeDataExtension: true
