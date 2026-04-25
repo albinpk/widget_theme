@@ -16,6 +16,7 @@ part 'my_button.g.dart';
 )
 class MyButton extends StatelessWidget {
   const MyButton({
+    required this.label,
     this.textStyle,
     this.backgroundColor,
     this.foregroundColor,
@@ -24,6 +25,7 @@ class MyButton extends StatelessWidget {
     super.key,
   });
 
+  final String label;
   final TextStyle? textStyle;
   final Color? backgroundColor;
   final Color? foregroundColor;
@@ -41,7 +43,7 @@ class MyButton extends StatelessWidget {
           padding: theme.padding,
           color: theme.backgroundColor,
           child: Text(
-            'Click Me',
+            label,
             style: theme.textStyle ?? TextStyle(color: theme.foregroundColor),
           ),
         ),

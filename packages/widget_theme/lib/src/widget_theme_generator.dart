@@ -217,9 +217,11 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
   }) {
     final widgetName = element.name!;
     final className = meta.name ?? '${element.name!}Theme';
-    final props = element.getters.where((e) {
-      final displayString = e.returnType.nonNull;
-      return e.returnType.isNullable &&
+    final props = element.fields.where((e) {
+      final displayString = e.type.nonNull;
+      return e.isFinal &&
+          !e.hasInitializer &&
+          e.type.isNullable &&
           (lerpTypes.contains(displayString) ||
               displayString.startsWith('WidgetStateProperty<'));
     }).toList();
@@ -259,7 +261,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
               f
                 ..name = e.name
                 ..modifier = .final$
-                ..type = Reference(e.returnType.toString());
+                ..type = Reference(e.type.toString());
             });
           }),
         ])
@@ -275,7 +277,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
                   return Parameter((p) {
                     p
                       ..name = e.name!
-                      ..type = Reference(e.returnType.nullable)
+                      ..type = Reference(e.type.nullable)
                       ..named = true;
                   });
                 }),
@@ -311,20 +313,21 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
                 return $className(${props.map((e) {
                 final name = e.name;
                 return '$name: ${() {
-                  if (e.returnType.element?.name == 'WidgetStateProperty') {
-                    if (e.returnType case ParameterizedType(:final typeArguments)) {
-                      if (typeArguments.isEmpty) throw Exception('WidgetStateProperty without type parameters is not supported');
+                  if (e.type.element?.name == 'WidgetStateProperty') {
+                    if (e.type case ParameterizedType(:final typeArguments)) {
+                      if (typeArguments.isEmpty) throw Exception('WidgetStateProperty without type parameters is not supported: "${e.name}"');
                       final t = typeArguments.first;
+                      if (!t.isNullable) throw Exception('Only nullable WidgetStateProperty is supported: "${e.name}"');
                       return '''
                           WidgetStateProperty.lerp<$t>(
                             $name,
                             other.$name,
                             t,
                             ${t.nonNull}.lerp,
-                          )${e.returnType.isNullable ? '' : '!'}''';
+                          )${e.type.isNullable ? '' : '!'}''';
                     }
                   }
-                  return '${e.returnType.nonNull}.lerp($name, other.$name, t)${e.returnType.isNullable ? '' : '!'}';
+                  return '${e.type.nonNull}.lerp($name, other.$name, t)${e.type.isNullable ? '' : '!'}';
                 }()}';
               }).join(',')});''');
           }),
@@ -491,7 +494,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
                 super.debugFillProperties(properties);
                 properties..
                 ${props.map((e) {
-                  return "add(DiagnosticsProperty<${e.returnType.nonNull}>('${e.name}', ${e.name}))";
+                  return "add(DiagnosticsProperty<${e.type.nonNull}>('${e.name}', ${e.name}))";
                 }).join('..')};''');
             }),
         ]);
