@@ -4,6 +4,7 @@ import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:source_gen/source_gen.dart';
+import 'package:widget_theme/src/lerp_types.dart';
 import 'package:widget_theme_annotation/widget_theme_annotation.dart';
 
 /// Generator for [WidgetTheme] annotation.
@@ -216,7 +217,12 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
   }) {
     final widgetName = element.name!;
     final className = meta.name ?? '${element.name!}Theme';
-    final props = element.getters.where((e) => e.returnType.isNullable);
+    final props = element.getters.where((e) {
+      final displayString = e.returnType.nonNull;
+      return e.returnType.isNullable &&
+          (lerpTypes.contains(displayString) ||
+              displayString.startsWith('WidgetStateProperty<'));
+    }).toList();
 
     return Class((c) {
       c
@@ -303,25 +309,23 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
               ..body = Code('''
                 if (other is! $className) return this;
                 return $className(${props.map((e) {
-                return '${e.name}: ${switch (e.returnType.nonNull) {
-                  'double' => 'lerpDouble(${e.name}, other.${e.name}, t)${e.returnType.isNullable ? '' : '!'}',
-                  _ => () {
-                    if (e.returnType.element?.name == 'WidgetStateProperty') {
-                      if (e.returnType case ParameterizedType(:final typeArguments)) {
-                        if (typeArguments.isEmpty) throw Exception('WidgetStateProperty without type parameters is not supported');
-                        final t = typeArguments.first;
-                        return '''
+                final name = e.name;
+                return '$name: ${() {
+                  if (e.returnType.element?.name == 'WidgetStateProperty') {
+                    if (e.returnType case ParameterizedType(:final typeArguments)) {
+                      if (typeArguments.isEmpty) throw Exception('WidgetStateProperty without type parameters is not supported');
+                      final t = typeArguments.first;
+                      return '''
                           WidgetStateProperty.lerp<$t>(
-                            ${e.name},
-                            other.${e.name},
+                            $name,
+                            other.$name,
                             t,
                             ${t.nonNull}.lerp,
                           )${e.returnType.isNullable ? '' : '!'}''';
-                      }
                     }
-                    return '${e.returnType.nonNull}.lerp(${e.name}, other.${e.name}, t)${e.returnType.isNullable ? '' : '!'}';
-                  }(),
-                }}';
+                  }
+                  return '${e.returnType.nonNull}.lerp($name, other.$name, t)${e.returnType.isNullable ? '' : '!'}';
+                }()}';
               }).join(',')});''');
           }),
 
