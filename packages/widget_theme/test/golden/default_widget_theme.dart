@@ -74,8 +74,7 @@ class MyWidgetTheme extends ThemeExtension<MyWidgetTheme> with Diagnosticable {
 }
 
 extension MyWidgetThemeBuildContextX on BuildContext {
-  MyWidgetTheme get myWidgetTheme =>
-      MyWidgetThemeThemeDataX(Theme.of(this)).myWidgetTheme;
+  MyWidgetTheme get myWidgetTheme => Theme.of(this).extension<MyWidgetTheme>()!;
 }
 
 extension MyWidgetThemeThemeDataX on ThemeData {
