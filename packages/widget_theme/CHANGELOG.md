@@ -1,3 +1,7 @@
+## 0.1.1+1
+
+ - **test**: re-generate golden
+
 ## 0.1.1
 
  - **REFACTOR**: only generate for final and non-initialized fields.

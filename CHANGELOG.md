@@ -15,6 +15,27 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`widget_theme` - `v0.1.1+1`](#widget_theme---v0111)
+
+---
+
+#### `widget_theme` - `v0.1.1+1`
+
+ - **test**: re-generate golden
+
+
+## 2026-04-27
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`widget_theme` - `v0.1.1`](#widget_theme---v011)
  - [`widget_theme_annotation` - `v0.1.1`](#widget_theme_annotation---v011)
 

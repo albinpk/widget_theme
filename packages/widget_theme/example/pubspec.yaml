@@ -17,7 +17,7 @@ dev_dependencies:
   build_runner: ^2.13.1
   flutter_test:
     sdk: flutter
-  widget_theme: ^0.1.1
+  widget_theme: ^0.1.1+1
 
 flutter:
   uses-material-design: true
