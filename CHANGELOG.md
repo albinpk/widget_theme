@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2026-04-27
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`widget_theme` - `v0.1.1`](#widget_theme---v011)
+ - [`widget_theme_annotation` - `v0.1.1`](#widget_theme_annotation---v011)
+
+---
+
+#### `widget_theme` - `v0.1.1`
+
+ - **REFACTOR**: only generate for final and non-initialized fields.
+ - **FIX**: update BuildContext extension.
+ - **FEAT**: restrict generated properties to supported lerp types and refactor lerp logic for WidgetStateProperty compatibility.
+ - **FEAT**: add configurable options to WidgetTheme annotation.
+
+#### `widget_theme_annotation` - `v0.1.1`
+
+ - **FEAT**: add configurable options to WidgetTheme annotation.
+
+
 ## 2026-04-11
 
 ### Changes

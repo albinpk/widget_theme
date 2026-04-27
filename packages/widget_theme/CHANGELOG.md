@@ -1,3 +1,10 @@
+## 0.1.1
+
+ - **REFACTOR**: only generate for final and non-initialized fields.
+ - **FIX**: update BuildContext extension.
+ - **FEAT**: restrict generated properties to supported lerp types and refactor lerp logic for WidgetStateProperty compatibility.
+ - **FEAT**: add configurable options to WidgetTheme annotation.
+
 ## 0.1.0
 
  - Graduate package to a stable release. See pre-releases prior to this version for changelog entries.
