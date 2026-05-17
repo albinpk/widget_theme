@@ -11,6 +11,10 @@ Code generation for widget-level theming in Flutter.
 
 `widget_theme` generates strongly-typed theme models directly from your widget properties, enabling consistent, scalable, and centralized theming using Flutter’s `ThemeData` and `ThemeExtension`.
 
+| MyWidget                                                                                            | MyWidgetTheme                                                                                           |
+| --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| ![MyWidget](https://raw.githubusercontent.com/albinpk/widget_theme/refs/heads/main/docs/before.png) | ![MyWidgetTheme](https://raw.githubusercontent.com/albinpk/widget_theme/refs/heads/main/docs/after.png) |
+
 ---
 
 ## Features
