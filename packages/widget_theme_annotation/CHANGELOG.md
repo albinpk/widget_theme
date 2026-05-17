@@ -1,3 +1,7 @@
+## 0.1.2
+
+ - **FEAT**: add `ThemeExclude` annotation to allow ignoring fields during theme generation.
+
 ## 0.1.1
 
  - **FEAT**: add configurable options to WidgetTheme annotation.

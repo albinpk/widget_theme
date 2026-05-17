@@ -1,3 +1,8 @@
+## 0.1.2
+
+ - **FEAT**: add `ThemeExclude` annotation to allow ignoring fields during theme generation.
+ - **DOCS**: update example with all supported types.
+
 ## 0.1.1+1
 
  - **test**: re-generate golden

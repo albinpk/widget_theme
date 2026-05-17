@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2026-05-17
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`widget_theme` - `v0.1.2`](#widget_theme---v012)
+ - [`widget_theme_annotation` - `v0.1.2`](#widget_theme_annotation---v012)
+
+---
+
+#### `widget_theme` - `v0.1.2`
+
+ - **FEAT**: add `ThemeExclude` annotation to allow ignoring fields during theme generation.
+ - **DOCS**: update example with all supported types.
+
+#### `widget_theme_annotation` - `v0.1.2`
+
+ - **FEAT**: add `ThemeExclude` annotation to allow ignoring fields during theme generation.
+
+
 ## 2026-04-27
 
 ### Changes
