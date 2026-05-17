@@ -15,6 +15,27 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`widget_theme` - `v0.1.2+1`](#widget_theme---v0121)
+
+---
+
+#### `widget_theme` - `v0.1.2+1`
+
+ - **DOCS**: add before and after comparison images to README.
+
+
+## 2026-05-17
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`widget_theme` - `v0.1.2`](#widget_theme---v012)
  - [`widget_theme_annotation` - `v0.1.2`](#widget_theme_annotation---v012)
 

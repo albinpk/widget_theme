@@ -1,3 +1,7 @@
+## 0.1.2+1
+
+ - **DOCS**: add before and after comparison images to README.
+
 ## 0.1.2
 
  - **FEAT**: add `ThemeExclude` annotation to allow ignoring fields during theme generation.
