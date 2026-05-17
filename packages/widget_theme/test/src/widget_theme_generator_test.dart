@@ -18,5 +18,17 @@ Future<void> main() async {
     );
   });
 
+  final allTypesReader = await initializeLibraryReaderForDirectory(
+    'test/src/widget_theme',
+    'all_types.dart',
+  );
+
+  group('all theme types', () {
+    testAnnotatedElements<WidgetTheme>(
+      allTypesReader,
+      const WidgetThemeGenerator(options: .empty),
+    );
+  });
+
   clearBuildLog();
 }

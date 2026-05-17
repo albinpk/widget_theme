@@ -11,10 +11,17 @@ part '../../golden/default_widget_theme.dart';
   partOfCurrent: true,
 )
 class MyWidget extends StatelessWidget {
-  const MyWidget({this.foregroundColor, this.backgroundColor, super.key});
+  const MyWidget({
+    this.foregroundColor,
+    this.backgroundColor,
+    this.hoverColor,
+    super.key,
+  });
 
   final Color? foregroundColor;
   final Color? backgroundColor;
+  @themeExclude
+  final Color? hoverColor;
 
   @override
   Widget build(BuildContext context) {
