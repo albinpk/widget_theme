@@ -51,3 +51,12 @@ class WidgetTheme {
 
 /// Annotation instance of [WidgetTheme].
 const widgetTheme = WidgetTheme();
+
+/// Annotation to exclude a field from the theme.
+@Target({.field})
+class ThemeExclude {
+  const ThemeExclude();
+}
+
+/// Annotation instance of [ThemeExclude].
+const themeExclude = ThemeExclude();

@@ -7,6 +7,8 @@ import 'package:source_gen/source_gen.dart';
 import 'package:widget_theme/src/lerp_types.dart';
 import 'package:widget_theme_annotation/widget_theme_annotation.dart';
 
+const themeExcludeChecker = TypeChecker.typeNamed(ThemeExclude);
+
 /// Generator for [WidgetTheme] annotation.
 class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
   /// Generator for [WidgetTheme] annotation.
@@ -222,6 +224,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
       return e.isFinal &&
           !e.hasInitializer &&
           e.type.isNullable &&
+          !themeExcludeChecker.hasAnnotationOfExact(e) &&
           (lerpTypes.contains(displayString) ||
               displayString.startsWith('WidgetStateProperty<'));
     }).toList();

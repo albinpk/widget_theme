@@ -22,6 +22,7 @@ class MyButton extends StatelessWidget {
     this.foregroundColor,
     this.padding,
     this.margin,
+    this.hoverColor,
     super.key,
   });
 
@@ -31,6 +32,8 @@ class MyButton extends StatelessWidget {
   final Color? foregroundColor;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
+  @themeExclude
+  final Color? hoverColor;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +42,7 @@ class MyButton extends StatelessWidget {
     return Padding(
       padding: theme.margin ?? .zero,
       child: InkWell(
+        hoverColor: hoverColor,
         child: Container(
           padding: theme.padding,
           color: theme.backgroundColor,
