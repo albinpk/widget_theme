@@ -6,14 +6,14 @@ const lerpTypes = [
   'AlignmentGeometry',
   'AnimationStyle',
   'AppBarTheme',
-  'AppBarThemeData',
+  // 'AppBarThemeData', // nullable not supported
   'BadgeThemeData',
   'Border',
   'BorderDirectional',
   'BorderRadius',
   'BorderRadiusDirectional',
   'BorderRadiusGeometry',
-  'BorderSide',
+  // 'BorderSide', // nullable not supported
   'BottomAppBarTheme',
   'BottomAppBarThemeData',
   'BottomNavigationBarThemeData',
@@ -29,8 +29,8 @@ const lerpTypes = [
   'CheckboxThemeData',
   'ChipThemeData',
   'Color',
-  'ColorScheme',
-  'DataTableThemeData',
+  // 'ColorScheme', // nullable not supported
+  // 'DataTableThemeData', // nullable not supported
   'DatePickerThemeData',
   'Decoration',
   'DecorationImage',
@@ -86,21 +86,21 @@ const lerpTypes = [
   'ShapeBorder',
   'ShapeDecoration',
   'Size',
-  'SliderThemeData',
+  // 'SliderThemeData', // nullable not supported
   'SnackBarThemeData',
   'SweepGradient',
   'SwitchThemeData',
-  'TabBarTheme',
-  'TabBarThemeData',
+  // 'TabBarTheme', // nullable not supported
+  // 'TabBarThemeData', // nullable not supported
   'TableBorder',
   'TextButtonThemeData',
   'TextSelectionThemeData',
   'TextStyle',
   'TextTheme',
-  'ThemeData',
+  // 'ThemeData', // nullable not supported
   'TimePickerThemeData',
   'ToggleButtonsThemeData',
   'TooltipThemeData',
-  'Typography',
-  'VisualDensity',
+  // 'Typography', // nullable not supported
+  // 'VisualDensity', // nullable not supported
 ];
