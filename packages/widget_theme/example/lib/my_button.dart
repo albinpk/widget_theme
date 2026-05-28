@@ -17,13 +17,15 @@ part 'my_button.g.dart';
 class MyButton extends StatelessWidget {
   const MyButton({
     required this.label,
+    super.key,
     this.textStyle,
     this.backgroundColor,
     this.foregroundColor,
     this.padding,
     this.margin,
     this.hoverColor,
-    super.key,
+    this.onTap,
+    this.onHover,
   });
 
   final String label;
@@ -32,8 +34,11 @@ class MyButton extends StatelessWidget {
   final Color? foregroundColor;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
-  @themeExclude
+  @themeExclude // excluded from theme
   final Color? hoverColor;
+  final VoidCallback? onTap;
+  @themeInclude // included in theme
+  final ValueChanged<bool>? onHover;
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +47,8 @@ class MyButton extends StatelessWidget {
     return Padding(
       padding: theme.margin ?? .zero,
       child: InkWell(
+        onTap: onTap,
+        onHover: theme.onHover,
         hoverColor: hoverColor,
         child: Container(
           padding: theme.padding,

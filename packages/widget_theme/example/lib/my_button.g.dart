@@ -14,6 +14,7 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
     this.foregroundColor,
     this.padding,
     this.margin,
+    this.onHover,
   });
 
   final TextStyle? textStyle;
@@ -26,6 +27,8 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
 
   final EdgeInsetsGeometry? margin;
 
+  final void Function(bool)? onHover;
+
   @override
   MyButtonTheme copyWith({
     TextStyle? textStyle,
@@ -33,12 +36,14 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
     Color? foregroundColor,
     EdgeInsetsGeometry? padding,
     EdgeInsetsGeometry? margin,
+    void Function(bool)? onHover,
   }) => MyButtonTheme(
     textStyle: textStyle ?? this.textStyle,
     backgroundColor: backgroundColor ?? this.backgroundColor,
     foregroundColor: foregroundColor ?? this.foregroundColor,
     padding: padding ?? this.padding,
     margin: margin ?? this.margin,
+    onHover: onHover ?? this.onHover,
   );
 
   @override
@@ -50,6 +55,7 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
       foregroundColor: Color.lerp(foregroundColor, other.foregroundColor, t),
       padding: EdgeInsetsGeometry.lerp(padding, other.padding, t),
       margin: EdgeInsetsGeometry.lerp(margin, other.margin, t),
+      onHover: t < 0.5 ? onHover : other.onHover,
     );
   }
 
@@ -71,6 +77,7 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
     foregroundColor: widget.foregroundColor,
     padding: widget.padding,
     margin: widget.margin,
+    onHover: widget.onHover,
   );
 
   static Widget overrideWith({
@@ -92,7 +99,8 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
         other.backgroundColor == backgroundColor &&
         other.foregroundColor == foregroundColor &&
         other.padding == padding &&
-        other.margin == margin;
+        other.margin == margin &&
+        other.onHover == onHover;
   }
 
   @override
@@ -103,6 +111,7 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
     foregroundColor,
     padding,
     margin,
+    onHover,
   );
 
   @override
@@ -113,7 +122,8 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
       ..add(DiagnosticsProperty<Color>('backgroundColor', backgroundColor))
       ..add(DiagnosticsProperty<Color>('foregroundColor', foregroundColor))
       ..add(DiagnosticsProperty<EdgeInsetsGeometry>('padding', padding))
-      ..add(DiagnosticsProperty<EdgeInsetsGeometry>('margin', margin));
+      ..add(DiagnosticsProperty<EdgeInsetsGeometry>('margin', margin))
+      ..add(DiagnosticsProperty<void Function(bool)>('onHover', onHover));
   }
 }
 

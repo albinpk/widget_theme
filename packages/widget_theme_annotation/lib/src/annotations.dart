@@ -60,3 +60,12 @@ class ThemeExclude {
 
 /// Annotation instance of [ThemeExclude].
 const themeExclude = ThemeExclude();
+
+/// Annotation to include a field in the theme.
+@Target({.field})
+class ThemeInclude {
+  const ThemeInclude();
+}
+
+/// Annotation instance of [ThemeInclude].
+const themeInclude = ThemeInclude();
