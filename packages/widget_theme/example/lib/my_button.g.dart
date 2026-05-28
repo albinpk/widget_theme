@@ -6,15 +6,34 @@ part of 'my_button.dart';
 // WidgetThemeGenerator
 // **************************************************************************
 
+/// Theme data for [MyButton].
+///
+/// Generated from fields in [MyButton] annotated with `@WidgetTheme`.
+///
+/// This theme is implemented as a [ThemeExtension] and can be added to
+/// [ThemeData.extensions].
+///
+/// Example:
+///
+/// ```dart
+/// ThemeData(
+///   extensions: [
+///     const MyButtonTheme(
+///       // ...
+///     ),
+///   ],
+/// )
+/// ```
 @immutable
 class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
+  /// Create instance of [MyButtonTheme].
   const MyButtonTheme({
     this.textStyle,
     this.backgroundColor,
     this.foregroundColor,
     this.padding,
     this.margin,
-    this.onHover,
+    this.onLongPress,
   });
 
   final TextStyle? textStyle;
@@ -27,7 +46,7 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
 
   final EdgeInsetsGeometry? margin;
 
-  final void Function(bool)? onHover;
+  final void Function()? onLongPress;
 
   @override
   MyButtonTheme copyWith({
@@ -36,14 +55,14 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
     Color? foregroundColor,
     EdgeInsetsGeometry? padding,
     EdgeInsetsGeometry? margin,
-    void Function(bool)? onHover,
+    void Function()? onLongPress,
   }) => MyButtonTheme(
     textStyle: textStyle ?? this.textStyle,
     backgroundColor: backgroundColor ?? this.backgroundColor,
     foregroundColor: foregroundColor ?? this.foregroundColor,
     padding: padding ?? this.padding,
     margin: margin ?? this.margin,
-    onHover: onHover ?? this.onHover,
+    onLongPress: onLongPress ?? this.onLongPress,
   );
 
   @override
@@ -55,13 +74,19 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
       foregroundColor: Color.lerp(foregroundColor, other.foregroundColor, t),
       padding: EdgeInsetsGeometry.lerp(padding, other.padding, t),
       margin: EdgeInsetsGeometry.lerp(margin, other.margin, t),
-      onHover: t < 0.5 ? onHover : other.onHover,
+      onLongPress: t < 0.5 ? onLongPress : other.onLongPress,
     );
   }
 
+  /// Returns the nearest [MyButtonTheme] in the widget tree.
+  ///
+  /// Returns `null` if no theme is found.
   static MyButtonTheme? maybeOf(BuildContext context) =>
       Theme.of(context).extension<MyButtonTheme>();
 
+  /// Returns the nearest [MyButtonTheme] in the widget tree.
+  ///
+  /// Throws a [FlutterError] if no theme is found.
   static MyButtonTheme of(BuildContext context) {
     final data = maybeOf(context);
     if (data == null) {
@@ -70,6 +95,9 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
     return data;
   }
 
+  /// Merges widget properties with this theme.
+  ///
+  /// Non-null widget values override themed values.
   // ignore: unused_element
   MyButtonTheme _mergeWidget(MyButton widget) => copyWith(
     textStyle: widget.textStyle,
@@ -77,9 +105,12 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
     foregroundColor: widget.foregroundColor,
     padding: widget.padding,
     margin: widget.margin,
-    onHover: widget.onHover,
+    onLongPress: widget.onLongPress,
   );
 
+  /// Overrides the current [MyButtonTheme] for the given subtree.
+  ///
+  /// This creates a scoped theme override using Flutter's theme system.
   static Widget overrideWith({
     required MyButtonTheme data,
     required Widget child,
@@ -100,7 +131,7 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
         other.foregroundColor == foregroundColor &&
         other.padding == padding &&
         other.margin == margin &&
-        other.onHover == onHover;
+        other.onLongPress == onLongPress;
   }
 
   @override
@@ -111,7 +142,7 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
     foregroundColor,
     padding,
     margin,
-    onHover,
+    onLongPress,
   );
 
   @override
@@ -123,14 +154,18 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
       ..add(DiagnosticsProperty<Color>('foregroundColor', foregroundColor))
       ..add(DiagnosticsProperty<EdgeInsetsGeometry>('padding', padding))
       ..add(DiagnosticsProperty<EdgeInsetsGeometry>('margin', margin))
-      ..add(DiagnosticsProperty<void Function(bool)>('onHover', onHover));
+      ..add(DiagnosticsProperty<void Function()>('onLongPress', onLongPress));
   }
 }
 
+/// Extension for accessing [MyButtonTheme] from [BuildContext].
 extension MyButtonThemeBuildContextX on BuildContext {
+  /// Returns the current [MyButtonTheme].
   MyButtonTheme get myButtonTheme => Theme.of(this).extension<MyButtonTheme>()!;
 }
 
+/// Extension for accessing [MyButtonTheme] from [ThemeData].
 extension MyButtonThemeThemeDataX on ThemeData {
+  /// Returns the registered [MyButtonTheme].
   MyButtonTheme get myButtonTheme => extension<MyButtonTheme>()!;
 }

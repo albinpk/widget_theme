@@ -247,7 +247,27 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
       c
         // class
         ..name = className
-        ..extend = Reference('ThemeExtension<$className>');
+        ..extend = Reference('ThemeExtension<$className>')
+        ..docs.add('''
+/// Theme data for [$widgetName].
+///
+/// Generated from fields in [$widgetName] annotated with `@WidgetTheme`.
+///
+/// This theme is implemented as a [ThemeExtension] and can be added to
+/// [ThemeData.extensions].
+///
+/// Example:
+///
+/// ```dart
+/// ThemeData(
+///   extensions: [
+///     const $className(
+///       // ...
+///     ),
+///   ],
+/// )
+/// ```''');
+
       if (meta.diagnosticable ?? true) {
         c.mixins.add(const Reference('Diagnosticable'));
       }
@@ -258,6 +278,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
           Constructor((c) {
             c
               ..constant = true
+              ..docs.add('/// Create instance of [$className].')
               ..optionalParameters.addAll(
                 props.map((e) {
                   return Parameter((p) {
@@ -357,6 +378,10 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
                 ..name = 'maybeOf'
                 ..static = true
                 ..returns = Reference('$className?')
+                ..docs.add('''
+/// Returns the nearest [$className] in the widget tree.
+///
+/// Returns `null` if no theme is found.''')
                 ..requiredParameters.add(
                   Parameter((p) {
                     p
@@ -374,6 +399,10 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
                 ..name = 'of'
                 ..static = true
                 ..returns = Reference(className)
+                ..docs.add('''
+/// Returns the nearest [$className] in the widget tree.
+///
+/// Throws a [FlutterError] if no theme is found.''')
                 ..requiredParameters.add(
                   Parameter((p) {
                     p
@@ -398,7 +427,11 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
                 ..name = '_mergeWidget'
                 ..returns = Reference(className)
                 ..lambda = true
-                ..docs.add('// ignore: unused_element')
+                ..docs.add('''
+/// Merges widget properties with this theme.
+///
+/// Non-null widget values override themed values.
+// ignore: unused_element''')
                 ..requiredParameters.add(
                   Parameter((p) {
                     p
@@ -422,6 +455,10 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
                 ..returns = const Reference('Widget')
                 ..static = true
                 ..lambda = true
+                ..docs.add('''
+/// Overrides the current [$className] for the given subtree.
+///
+/// This creates a scoped theme override using Flutter's theme system.''')
                 ..optionalParameters.addAll([
                   Parameter((p) {
                     p
@@ -528,6 +565,9 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
       e
         ..name = '${className}BuildContextX'
         ..on = const Reference('BuildContext')
+        ..docs.add(
+          '/// Extension for accessing [$className] from [BuildContext].',
+        )
         ..methods.add(
           Method((f) {
             final getterName =
@@ -537,6 +577,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
               ..returns = Reference(className)
               ..type = .getter
               ..lambda = true
+              ..docs.add('/// Returns the current [$className].')
               ..body = Code(
                 'Theme.of(this).extension<$className>()!',
               );
@@ -554,6 +595,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
       e
         ..name = '${className}ThemeDataX'
         ..on = const Reference('ThemeData')
+        ..docs.add('/// Extension for accessing [$className] from [ThemeData].')
         ..methods.add(
           Method((f) {
             f
@@ -561,6 +603,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
               ..returns = Reference(className)
               ..type = .getter
               ..lambda = true
+              ..docs.add('/// Returns the registered [$className].')
               ..body = Code('extension<$className>()!');
           }),
         );

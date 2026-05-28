@@ -25,7 +25,7 @@ class MyButton extends StatelessWidget {
     this.margin,
     this.hoverColor,
     this.onTap,
-    this.onHover,
+    this.onLongPress,
   });
 
   final String label;
@@ -38,7 +38,7 @@ class MyButton extends StatelessWidget {
   final Color? hoverColor;
   final VoidCallback? onTap;
   @themeInclude // included in theme
-  final ValueChanged<bool>? onHover;
+  final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +48,8 @@ class MyButton extends StatelessWidget {
       padding: theme.margin ?? .zero,
       child: InkWell(
         onTap: onTap,
-        onHover: theme.onHover,
         hoverColor: hoverColor,
+        onLongPress: theme.onLongPress,
         child: Container(
           padding: theme.padding,
           color: theme.backgroundColor,
