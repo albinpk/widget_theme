@@ -15,6 +15,7 @@ class MyWidget extends StatelessWidget {
     this.foregroundColor,
     this.backgroundColor,
     this.hoverColor,
+    this.onTap,
     super.key,
   });
 
@@ -22,6 +23,8 @@ class MyWidget extends StatelessWidget {
   final Color? backgroundColor;
   @themeExclude
   final Color? hoverColor;
+  @themeInclude
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
