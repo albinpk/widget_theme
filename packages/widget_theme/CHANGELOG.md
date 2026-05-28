@@ -1,3 +1,9 @@
+## 0.1.3
+
+ - **FEAT**: add docs generation configuration to WidgetTheme annotation.
+ - **FEAT**: add documentation to generated theme classes and extensions.
+ - **FEAT**: add @themeInclude annotation to allow including custom properties in generated themes.
+
 ## 0.1.2+1
 
  - **DOCS**: add before and after comparison images to README.

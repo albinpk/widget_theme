@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2026-05-28
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`widget_theme` - `v0.1.3`](#widget_theme---v013)
+ - [`widget_theme_annotation` - `v0.1.3`](#widget_theme_annotation---v013)
+
+---
+
+#### `widget_theme` - `v0.1.3`
+
+ - **FEAT**: add docs generation configuration to WidgetTheme annotation.
+ - **FEAT**: add documentation to generated theme classes and extensions.
+ - **FEAT**: add @themeInclude annotation to allow including custom properties in generated themes.
+
+#### `widget_theme_annotation` - `v0.1.3`
+
+ - **FEAT**: add docs generation configuration to WidgetTheme annotation.
+ - **FEAT**: add @themeInclude annotation to allow including custom properties in generated themes.
+
+
 ## 2026-05-17
 
 ### Changes

@@ -1,3 +1,8 @@
+## 0.1.3
+
+ - **FEAT**: add docs generation configuration to WidgetTheme annotation.
+ - **FEAT**: add @themeInclude annotation to allow including custom properties in generated themes.
+
 ## 0.1.2
 
  - **FEAT**: add `ThemeExclude` annotation to allow ignoring fields during theme generation.
