@@ -242,13 +242,15 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
     final widgetName = element.name!;
     final className = meta.name ?? '${element.name!}Theme';
     final props = _getProps(element.fields);
+    final docs = meta.docs ?? true;
 
     return Class((c) {
       c
         // class
         ..name = className
-        ..extend = Reference('ThemeExtension<$className>')
-        ..docs.add('''
+        ..extend = Reference('ThemeExtension<$className>');
+      if (docs) {
+        c.docs.add('''
 /// Theme data for [$widgetName].
 ///
 /// Generated from fields in [$widgetName] annotated with `@WidgetTheme`.
@@ -267,7 +269,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
 ///   ],
 /// )
 /// ```''');
-
+      }
       if (meta.diagnosticable ?? true) {
         c.mixins.add(const Reference('Diagnosticable'));
       }
@@ -276,19 +278,18 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
         // constructor
         ..constructors.add(
           Constructor((c) {
-            c
-              ..constant = true
-              ..docs.add('/// Create instance of [$className].')
-              ..optionalParameters.addAll(
-                props.map((e) {
-                  return Parameter((p) {
-                    p
-                      ..toThis = true
-                      ..name = e.field.name!
-                      ..named = true;
-                  });
-                }),
-              );
+            c.constant = true;
+            if (docs) c.docs.add('/// Create instance of [$className].');
+            c.optionalParameters.addAll(
+              props.map((e) {
+                return Parameter((p) {
+                  p
+                    ..toThis = true
+                    ..name = e.field.name!
+                    ..named = true;
+                });
+              }),
+            );
           }),
         )
         // fields
@@ -377,11 +378,14 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
               m
                 ..name = 'maybeOf'
                 ..static = true
-                ..returns = Reference('$className?')
-                ..docs.add('''
+                ..returns = Reference('$className?');
+              if (docs) {
+                m.docs.add('''
 /// Returns the nearest [$className] in the widget tree.
 ///
-/// Returns `null` if no theme is found.''')
+/// Returns `null` if no theme is found.''');
+              }
+              m
                 ..requiredParameters.add(
                   Parameter((p) {
                     p
@@ -398,11 +402,14 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
               m
                 ..name = 'of'
                 ..static = true
-                ..returns = Reference(className)
-                ..docs.add('''
+                ..returns = Reference(className);
+              if (docs) {
+                m.docs.add('''
 /// Returns the nearest [$className] in the widget tree.
 ///
-/// Throws a [FlutterError] if no theme is found.''')
+/// Throws a [FlutterError] if no theme is found.''');
+              }
+              m
                 ..requiredParameters.add(
                   Parameter((p) {
                     p
@@ -426,12 +433,16 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
               m
                 ..name = '_mergeWidget'
                 ..returns = Reference(className)
-                ..lambda = true
-                ..docs.add('''
+                ..lambda = true;
+              m.docs.addAll([
+                if (docs)
+                  '''
 /// Merges widget properties with this theme.
 ///
-/// Non-null widget values override themed values.
-// ignore: unused_element''')
+/// Non-null widget values override themed values.''',
+                '// ignore: unused_element',
+              ]);
+              m
                 ..requiredParameters.add(
                   Parameter((p) {
                     p
@@ -454,11 +465,14 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
                 ..name = 'overrideWith'
                 ..returns = const Reference('Widget')
                 ..static = true
-                ..lambda = true
-                ..docs.add('''
+                ..lambda = true;
+              if (docs) {
+                m.docs.add('''
 /// Overrides the current [$className] for the given subtree.
 ///
-/// This creates a scoped theme override using Flutter's theme system.''')
+/// This creates a scoped theme override using Flutter's theme system.''');
+              }
+              m
                 ..optionalParameters.addAll([
                   Parameter((p) {
                     p
@@ -560,29 +574,30 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
     required ClassElement element,
     required WidgetTheme meta,
   }) {
+    final docs = meta.docs ?? true;
     final className = meta.name ?? '${element.name!}Theme';
     return Extension((e) {
       e
         ..name = '${className}BuildContextX'
-        ..on = const Reference('BuildContext')
-        ..docs.add(
+        ..on = const Reference('BuildContext');
+      if (docs) {
+        e.docs.add(
           '/// Extension for accessing [$className] from [BuildContext].',
-        )
-        ..methods.add(
-          Method((f) {
-            final getterName =
-                className[0].toLowerCase() + className.substring(1);
-            f
-              ..name = getterName
-              ..returns = Reference(className)
-              ..type = .getter
-              ..lambda = true
-              ..docs.add('/// Returns the current [$className].')
-              ..body = Code(
-                'Theme.of(this).extension<$className>()!',
-              );
-          }),
         );
+      }
+      e.methods.add(
+        Method((f) {
+          final getterName =
+              className[0].toLowerCase() + className.substring(1);
+          f
+            ..name = getterName
+            ..returns = Reference(className)
+            ..type = .getter
+            ..lambda = true;
+          if (docs) f.docs.add('/// Returns the current [$className].');
+          f.body = Code('Theme.of(this).extension<$className>()!');
+        }),
+      );
     });
   }
 
@@ -590,23 +605,28 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
     required ClassElement element,
     required WidgetTheme meta,
   }) {
+    final docs = meta.docs ?? true;
     final className = meta.name ?? '${element.name!}Theme';
     return Extension((e) {
       e
         ..name = '${className}ThemeDataX'
-        ..on = const Reference('ThemeData')
-        ..docs.add('/// Extension for accessing [$className] from [ThemeData].')
-        ..methods.add(
-          Method((f) {
-            f
-              ..name = '${className[0].toLowerCase()}${className.substring(1)}'
-              ..returns = Reference(className)
-              ..type = .getter
-              ..lambda = true
-              ..docs.add('/// Returns the registered [$className].')
-              ..body = Code('extension<$className>()!');
-          }),
+        ..on = const Reference('ThemeData');
+      if (docs) {
+        e.docs.add(
+          '/// Extension for accessing [$className] from [ThemeData].',
         );
+      }
+      e.methods.add(
+        Method((f) {
+          f
+            ..name = '${className[0].toLowerCase()}${className.substring(1)}'
+            ..returns = Reference(className)
+            ..type = .getter
+            ..lambda = true;
+          if (docs) f.docs.add('/// Returns the registered [$className].');
+          f.body = Code('extension<$className>()!');
+        }),
+      );
     });
   }
 }
@@ -646,6 +666,7 @@ extension on ConstantReader {
       themeDataExtension:
           objectValue.getField('themeDataExtension')?.toBoolValue() ??
           map['themeDataExtension'] as bool?,
+      docs: objectValue.getField('docs')?.toBoolValue() ?? map['docs'] as bool?,
     );
   }
 }

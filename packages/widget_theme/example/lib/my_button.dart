@@ -13,6 +13,7 @@ part 'my_button.g.dart';
   // equals: false,
   // buildContextExtension: false,
   // themeDataExtension: false,
+  // docs: false,
 )
 class MyButton extends StatelessWidget {
   const MyButton({

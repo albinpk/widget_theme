@@ -5,14 +5,15 @@ import 'package:meta/meta_meta.dart';
 class WidgetTheme {
   /// Creates a [WidgetTheme] annotation.
   const WidgetTheme({
-    this.themeDataExtension,
-    this.buildContextExtension,
-    this.equals,
-    this.diagnosticable,
-    this.overrideWithHelper,
-    this.mergeWidgetHelper,
-    this.staticAccessor,
     this.name,
+    this.staticAccessor,
+    this.mergeWidgetHelper,
+    this.overrideWithHelper,
+    this.diagnosticable,
+    this.equals,
+    this.buildContextExtension,
+    this.themeDataExtension,
+    this.docs,
   });
 
   /// Name of the theme extension.
@@ -47,6 +48,10 @@ class WidgetTheme {
   /// Whether to generate a extension on ThemeData that provides the theme.
   /// Default is true.
   final bool? themeDataExtension;
+
+  /// Whether to generate documentation.
+  /// Default is true.
+  final bool? docs;
 }
 
 /// Annotation instance of [WidgetTheme].

@@ -10,3 +10,4 @@ targets:
           equals: true
           buildContextExtension: true
           themeDataExtension: true
+          docs: true
