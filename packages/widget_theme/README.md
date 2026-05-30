@@ -9,7 +9,7 @@
 
 Code generation for widget-level theming in Flutter.
 
-`widget_theme` generates strongly-typed theme models directly from your widget properties, enabling consistent, scalable, and centralized theming using Flutter’s `ThemeData` and `ThemeExtension`.
+`widget_theme` generates strongly-typed theme models directly from your widget properties, enabling consistent, scalable, and centralized theming using Flutter’s `ThemeData` and `ThemeExtension`. This package is incredibly useful if you are building a customizable widget library or reusing widgets across multiple modules or apps where clients might want to override their appearance.
 
 | MyWidget                                                                                            | MyWidgetTheme                                                                                           |
 | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
@@ -20,17 +20,18 @@ Code generation for widget-level theming in Flutter.
 ## Features
 
 - Generate theme classes from widget properties
-- Built on top of ThemeExtension
-- Automatic `copyWith`, `lerp`, equality, and diagnostics
-- Context-based access (`MyWidgetTheme.of(context)`)
+- Built on top of `ThemeExtension`
+- Automatic `copyWith`, `lerp`, equality (`==` and `hashCode`), and diagnostics (`Diagnosticable`)
+- Context-based access (`MyWidgetTheme.of(context)`) and extensions (`context.myWidgetTheme`)
 - Supports widget-level overrides
+- Fine-grained control over generated code
 - Zero manual boilerplate
 
 ---
 
 ## Installation
 
-Add dependencies:
+Add dependencies to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
@@ -39,6 +40,15 @@ dependencies:
 dev_dependencies:
   build_runner: ^latest
   widget_theme: ^latest
+```
+
+Or run the following command:
+
+```sh
+flutter pub add \
+  widget_theme_annotation \
+  dev:widget_theme \
+  dev:build_runner
 ```
 
 ---
@@ -61,7 +71,8 @@ class MyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = MyWidgetTheme.of(context)._mergeWidget(this);
+    // Merge widget properties with the theme from the context
+    final theme = context.myWidgetTheme._mergeWidget(this);
 
     return Padding(
       padding: theme.padding ?? const EdgeInsets.all(8),
@@ -101,22 +112,115 @@ MaterialApp(
 
 ---
 
-## Generated Output
+## How It Works
 
-For the annotated widget above, the generator produces:
+`widget_theme` reads your widget's fields and generates a corresponding `ThemeExtension`. At runtime, it merges the widget properties (if provided) with the theme values (from the nearest `Theme` above it), using Flutter's theme propagation for consistency.
 
-- `MyWidgetTheme extends ThemeExtension<MyWidgetTheme>`
-- `copyWith` and `lerp`
-- `of` / `maybeOf` helpers
-- widget-to-theme merge helper
-- Scoped override API
-- `BuildContext` and `ThemeData` extensions
+By default, the generator includes fields that meet **all** of the following criteria:
+
+1. `final`
+2. No initializer (e.g., `final Color? color;` instead of `final Color? color = Colors.red;`)
+3. Nullable type (e.g., `Color?` instead of `Color`)
+4. Not annotated with `@themeExclude`
+5. The field type is either a [standard Flutter framework type](https://github.com/albinpk/widget_theme/blob/main/packages/widget_theme/lib/src/lerp_types.dart) (like `Color`, `TextStyle`, `EdgeInsets`, etc.) OR a `WidgetStateProperty`, OR the field is annotated with `@themeInclude`.
+
+### Including Custom Types
+
+If you have a custom type or a type that is not automatically recognized, you can force the generator to include it using the `@themeInclude` annotation. Note that for custom types, the `lerp` method will simply snap between the values at `t < 0.5` rather than smoothly interpolating.
+
+```dart
+@widgetTheme
+class MyWidget extends StatelessWidget {
+  const MyWidget({
+    this.customData,
+    super.key,
+  });
+
+  @themeInclude
+  final CustomData? customData;
+  // ...
+}
+```
+
+### Excluding Properties
+
+If you want to exclude a field that would otherwise be included automatically, use `@themeExclude`.
+
+```dart
+@widgetTheme
+class MyWidget extends StatelessWidget {
+  const MyWidget({
+    this.color,
+    super.key,
+  });
+
+  @themeExclude
+  final Color? color; // This will not be part of the generated theme
+  // ...
+}
+```
+
+---
+
+## Generated Output & APIs
+
+For a widget `MyWidget`, the generator produces `MyWidgetTheme extends ThemeExtension<MyWidgetTheme>` with:
+
+- `copyWith` and `lerp` implementation
+- `operator ==` and `hashCode`
+- `debugFillProperties` for diagnostics
+- `MyWidgetTheme.of(context)` / `MyWidgetTheme.maybeOf(context)` helpers
+- `_mergeWidget(MyWidget)` helper to prioritize widget properties over theme properties
+- Scoped override API: `MyWidgetTheme.overrideWith(...)`
+- `BuildContext` extension: `context.myWidgetTheme`
+- `ThemeData` extension: `theme.myWidgetTheme`
+
+---
+
+## Configuration
+
+You can customize the generated code by passing arguments to the `@WidgetTheme` annotation or configuring `build.yaml`.
+
+```dart
+@WidgetTheme(
+  name: 'CustomWidgetThemeName',
+  staticAccessor: true,          // Generate `of` and `maybeOf`
+  mergeWidgetHelper: true,       // Generate `_mergeWidget`
+  overrideWithHelper: true,      // Generate `overrideWith`
+  diagnosticable: true,          // Mixin `Diagnosticable`
+  equals: true,                  // Generate `==` and `hashCode`
+  buildContextExtension: true,   // Generate `context.myWidgetTheme`
+  themeDataExtension: true,      // Generate `theme.myWidgetTheme`
+  docs: true,                    // Generate documentation
+)
+class MyWidget extends StatelessWidget {
+  // ...
+}
+```
+
+You can also set these options globally in your project's `build.yaml`:
+
+```yaml
+targets:
+  $default:
+    builders:
+      widget_theme:
+        options:
+          staticAccessor: true
+          mergeWidgetHelper: true
+          overrideWithHelper: true
+          diagnosticable: true
+          equals: true
+          buildContextExtension: true
+          themeDataExtension: true
+          docs: true
+```
 
 ---
 
 ## Overriding Theme in Subtree
 
-You can override the theme for a specific widget subtree:
+You can easily override the theme for a specific widget subtree without having to manually wrap it in a `Theme` widget:
 
 ```dart
 MyWidgetTheme.overrideWith(
@@ -124,28 +228,6 @@ MyWidgetTheme.overrideWith(
   child: const MyWidget(),
 )
 ```
-
-This creates a scoped override using Flutter’s theme system.
-
----
-
-## Accessing Theme
-
-```dart
-final theme = MyWidgetTheme.of(context);
-
-// or via extension
-final theme = context.myWidgetTheme;
-```
-
----
-
-## How It Works
-
-- Reads widget constructor fields
-- Generates a corresponding `ThemeExtension`
-- Merges widget properties with theme values at runtime
-- Uses Flutter’s theme propagation for consistency
 
 ---
 
@@ -155,12 +237,12 @@ Use `widget_theme` when:
 
 - You want reusable, themeable widgets
 - You need consistent styling across the app
-- You want to avoid manual theme boilerplate
+- You want to avoid manual boilerplate for `ThemeExtension`
 - You are building design systems or UI libraries
 
 ---
 
-## Related Package
+## Related Packages
 
 - [widget_theme_annotation](https://pub.dev/packages/widget_theme_annotation) – Provides annotations used for code generation
 
