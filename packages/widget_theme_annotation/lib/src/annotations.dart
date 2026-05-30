@@ -68,9 +68,15 @@ const themeExclude = ThemeExclude();
 
 /// Annotation to include a field in the theme.
 @Target({.field})
-class ThemeInclude {
-  const ThemeInclude();
+class ThemeInclude<T extends Object> {
+  const ThemeInclude({this.lerp});
+
+  /// Custom lerp function for the theme field.
+  ///
+  /// By default, the generated `lerp` method will simply snap between the
+  /// values at `t < 0.5` rather than smoothly interpolating.
+  final T? Function(T? a, T? b, double t)? lerp;
 }
 
 /// Annotation instance of [ThemeInclude].
-const themeInclude = ThemeInclude();
+const ThemeInclude<Object> themeInclude = ThemeInclude();

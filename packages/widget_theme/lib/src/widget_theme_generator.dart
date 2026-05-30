@@ -10,7 +10,7 @@ import 'package:widget_theme_annotation/widget_theme_annotation.dart';
 const themeExcludeChecker = TypeChecker.typeNamed(ThemeExclude);
 const themeIncludeChecker = TypeChecker.typeNamed(ThemeInclude);
 
-typedef _Prop = ({FieldElement field, bool isFramework});
+typedef _Prop = ({FieldElement field, bool isFramework, String? lerp});
 
 /// Generator for [WidgetTheme] annotation.
 class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
@@ -225,9 +225,19 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
         final displayString = f.type.nonNull;
         if (lerpTypes.contains(displayString) ||
             displayString.startsWith('WidgetStateProperty<')) {
-          props.add((field: f, isFramework: true));
-        } else if (themeIncludeChecker.hasAnnotationOfExact(f)) {
-          props.add((field: f, isFramework: false));
+          props.add((field: f, isFramework: true, lerp: null));
+        } else if (themeIncludeChecker.firstAnnotationOfExact(f)
+            case final meta?) {
+          String? lerpName;
+          if (meta.getField('lerp')?.toFunctionValue() case final fn?
+              when fn.name != null) {
+            if (fn.enclosingElement case ClassElement(:final name)) {
+              lerpName = '${name!}.${fn.name}';
+            } else {
+              lerpName = fn.name;
+            }
+          }
+          props.add((field: f, isFramework: false, lerp: lerpName));
         }
       }
     }
@@ -366,8 +376,9 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
                           )${e.field.type.isNullable ? '' : '!'}''';
                     }
                   }
-                  if (!e.isFramework) return 't < 0.5 ? $name : other.$name';
-                  return '${e.field.type.nonNull}.lerp($name, other.$name, t)${e.field.type.isNullable ? '' : '!'}';
+                  if (e.isFramework) return '${e.field.type.nonNull}.lerp($name, other.$name, t)${e.field.type.isNullable ? '' : '!'}';
+                  if (e.lerp case final fn?) return '$fn($name, other.$name, t)';
+                  return 't < 0.5 ? $name : other.$name';
                 }()}';
               }).join(',')});''');
           }),

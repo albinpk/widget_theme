@@ -9,7 +9,7 @@
 
 Code generation for widget-level theming in Flutter.
 
-`widget_theme` generates strongly-typed theme models directly from your widget properties, enabling consistent, scalable, and centralized theming using Flutter’s `ThemeData` and `ThemeExtension`. This package is incredibly useful if you are building a customizable widget library or reusing widgets across multiple modules or apps where clients might want to override their appearance.
+`widget_theme` generates strongly-typed theme models directly from your widget properties, enabling consistent, scalable, and centralized theming using Flutter’s `ThemeData` and `ThemeExtension`. This package is particularly useful for widget libraries, design systems, and reusable UI components that require centralized theming.
 
 | MyWidget                                                                                            | MyWidgetTheme                                                                                           |
 | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
@@ -114,7 +114,7 @@ MaterialApp(
 
 ## How It Works
 
-`widget_theme` reads your widget's fields and generates a corresponding `ThemeExtension`. At runtime, it merges the widget properties (if provided) with the theme values (from the nearest `Theme` above it), using Flutter's theme propagation for consistency.
+`widget_theme` reads your widget's fields and generates a corresponding `ThemeExtension`. When both a widget property and a theme property are provided, the widget property takes precedence.
 
 By default, the generator includes fields that meet **all** of the following criteria:
 
@@ -126,18 +126,35 @@ By default, the generator includes fields that meet **all** of the following cri
 
 ### Including Custom Types
 
-If you have a custom type or a type that is not automatically recognized, you can force the generator to include it using the `@themeInclude` annotation. Note that for custom types, the `lerp` method will simply snap between the values at `t < 0.5` rather than smoothly interpolating.
+If you have a custom type or a type that is not automatically recognized, you can force the generator to include it using the `@ThemeInclude` annotation. By default, for custom types without a provided `lerp` function, the generated `lerp` method will simply snap between the values at `t < 0.5` rather than smoothly interpolating.
+
+You can provide a custom lerp function directly to the `@ThemeInclude` annotation to enable smooth interpolation for your custom types:
 
 ```dart
+class CustomData {
+  // ...
+
+  static CustomData? lerp(CustomData? a, CustomData? b, double t) {
+    // Custom interpolation logic
+    return CustomData();
+  }
+}
+
 @widgetTheme
 class MyWidget extends StatelessWidget {
   const MyWidget({
     this.customData,
+    this.otherData,
     super.key,
   });
 
+  // Snaps at t < 0.5
   @themeInclude
   final CustomData? customData;
+
+  // Uses the static lerp function
+  @ThemeInclude(lerp: CustomData.lerp)
+  final CustomData? otherData;
   // ...
 }
 ```
@@ -162,7 +179,7 @@ class MyWidget extends StatelessWidget {
 
 ---
 
-## Generated Output & APIs
+## Generated APIs
 
 For a widget `MyWidget`, the generator produces `MyWidgetTheme extends ThemeExtension<MyWidgetTheme>` with:
 
