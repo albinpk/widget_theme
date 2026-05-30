@@ -1,3 +1,7 @@
+## 0.1.4
+
+ - **FEAT**: add support for custom lerp functions in `@ThemeInclude` annotation.
+
 ## 0.1.3
 
  - **FEAT**: add docs generation configuration to WidgetTheme annotation.
