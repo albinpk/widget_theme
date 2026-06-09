@@ -6,27 +6,8 @@ part of 'my_button.dart';
 // WidgetThemeGenerator
 // **************************************************************************
 
-/// Theme data for [MyButton].
-///
-/// Generated from fields in [MyButton] annotated with `@WidgetTheme`.
-///
-/// This theme is implemented as a [ThemeExtension] and can be added to
-/// [ThemeData.extensions].
-///
-/// Example:
-///
-/// ```dart
-/// ThemeData(
-///   extensions: [
-///     const MyButtonTheme(
-///       // ...
-///     ),
-///   ],
-/// )
-/// ```
 @immutable
 class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
-  /// Create instance of [MyButtonTheme].
   const MyButtonTheme({
     this.textStyle,
     this.backgroundColor,
@@ -78,15 +59,9 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
     );
   }
 
-  /// Returns the nearest [MyButtonTheme] in the widget tree.
-  ///
-  /// Returns `null` if no theme is found.
   static MyButtonTheme? maybeOf(BuildContext context) =>
       Theme.of(context).extension<MyButtonTheme>();
 
-  /// Returns the nearest [MyButtonTheme] in the widget tree.
-  ///
-  /// Throws a [FlutterError] if no theme is found.
   static MyButtonTheme of(BuildContext context) {
     final data = maybeOf(context);
     if (data == null) {
@@ -95,9 +70,6 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
     return data;
   }
 
-  /// Merges widget properties with this theme.
-  ///
-  /// Non-null widget values override themed values.
   // ignore: unused_element
   MyButtonTheme _mergeWidget(MyButton widget) => copyWith(
     textStyle: widget.textStyle,
@@ -108,9 +80,6 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
     onLongPress: widget.onLongPress,
   );
 
-  /// Overrides the current [MyButtonTheme] for the given subtree.
-  ///
-  /// This creates a scoped theme override using Flutter's theme system.
   static Widget overrideWith({
     required MyButtonTheme data,
     required Widget child,
@@ -158,14 +127,10 @@ class MyButtonTheme extends ThemeExtension<MyButtonTheme> with Diagnosticable {
   }
 }
 
-/// Extension for accessing [MyButtonTheme] from [BuildContext].
 extension MyButtonThemeBuildContextX on BuildContext {
-  /// Returns the current [MyButtonTheme].
   MyButtonTheme get myButtonTheme => Theme.of(this).extension<MyButtonTheme>()!;
 }
 
-/// Extension for accessing [MyButtonTheme] from [ThemeData].
 extension MyButtonThemeThemeDataX on ThemeData {
-  /// Returns the registered [MyButtonTheme].
   MyButtonTheme get myButtonTheme => extension<MyButtonTheme>()!;
 }
