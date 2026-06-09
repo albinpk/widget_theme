@@ -14,6 +14,7 @@ class WidgetTheme {
     this.buildContextExtension,
     this.themeDataExtension,
     this.docs,
+    this.fields = const [],
   });
 
   /// Name of the theme extension.
@@ -52,10 +53,18 @@ class WidgetTheme {
   /// Whether to generate documentation.
   /// Default is true.
   final bool? docs;
+
+  final List<ThemeField<dynamic>> fields;
 }
 
 /// Annotation instance of [WidgetTheme].
 const widgetTheme = WidgetTheme();
+
+class ThemeField<T> {
+  const ThemeField(this.name);
+
+  final String name;
+}
 
 /// Annotation to exclude a field from the theme.
 @Target({.field})

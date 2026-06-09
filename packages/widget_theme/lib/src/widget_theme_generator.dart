@@ -10,7 +10,15 @@ import 'package:widget_theme_annotation/widget_theme_annotation.dart';
 const themeExcludeChecker = TypeChecker.typeNamed(ThemeExclude);
 const themeIncludeChecker = TypeChecker.typeNamed(ThemeInclude);
 
-typedef _Prop = ({FieldElement field, bool isFramework, String? lerp});
+final fieldNameRegExp = RegExp(r'^[A-Za-z][A-Za-z0-9]*$');
+
+typedef _Prop = ({
+  String name,
+  DartType type,
+  bool isFramework,
+  bool isThemeOnly,
+  String? lerp,
+});
 
 /// Generator for [WidgetTheme] annotation.
 class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
@@ -32,6 +40,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
         l.body.addAll([
           _buildThemeExtensionClass(
             element: element,
+            annotation: annotation,
             buildStep: buildStep,
             meta: meta,
           ),
@@ -215,9 +224,42 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
   }
   */
 
-  List<_Prop> _getProps(List<FieldElement> fields) {
+  List<_Prop> _getProps(ClassElement element, ConstantReader annotation) {
     final props = <_Prop>[];
-    for (final f in fields) {
+
+    for (final f in annotation.read('fields').listValue) {
+      final name = f.getField('name')!.toStringValue()!;
+      if (!fieldNameRegExp.hasMatch(name)) {
+        throw Exception('Invalid field name: "$name"');
+      }
+      if (f.type case final InterfaceType t) {
+        final type = t.typeArguments.first;
+        if (type.toString() == 'dynamic') {
+          throw Exception('The type of field "$name" cannot be dynamic.');
+        }
+        final displayString = type.nonNull;
+        if (lerpTypes.contains(displayString) ||
+            displayString.startsWith('WidgetStateProperty<')) {
+          props.add((
+            name: name,
+            type: type,
+            isFramework: true,
+            isThemeOnly: true,
+            lerp: null,
+          ));
+        } else {
+          props.add((
+            name: name,
+            type: type,
+            isFramework: false,
+            isThemeOnly: true,
+            lerp: null,
+          ));
+        }
+      }
+    }
+
+    for (final f in element.fields) {
       if (f.isFinal &&
           !f.hasInitializer &&
           f.type.isNullable &&
@@ -225,7 +267,13 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
         final displayString = f.type.nonNull;
         if (lerpTypes.contains(displayString) ||
             displayString.startsWith('WidgetStateProperty<')) {
-          props.add((field: f, isFramework: true, lerp: null));
+          props.add((
+            name: f.name!,
+            type: f.type,
+            isFramework: true,
+            isThemeOnly: false,
+            lerp: null,
+          ));
         } else if (themeIncludeChecker.firstAnnotationOfExact(f)
             case final meta?) {
           String? lerpName;
@@ -237,7 +285,13 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
               lerpName = fn.name;
             }
           }
-          props.add((field: f, isFramework: false, lerp: lerpName));
+          props.add((
+            name: f.name!,
+            type: f.type,
+            isFramework: false,
+            isThemeOnly: false,
+            lerp: lerpName,
+          ));
         }
       }
     }
@@ -246,12 +300,13 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
 
   Class _buildThemeExtensionClass({
     required ClassElement element,
+    required ConstantReader annotation,
     required BuildStep buildStep,
     required WidgetTheme meta,
   }) {
     final widgetName = element.name!;
     final className = meta.name ?? '${element.name!}Theme';
-    final props = _getProps(element.fields);
+    final props = _getProps(element, annotation);
     final docs = meta.docs ?? true;
 
     return Class((c) {
@@ -295,8 +350,9 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
                 return Parameter((p) {
                   p
                     ..toThis = true
-                    ..name = e.field.name!
-                    ..named = true;
+                    ..name = e.name
+                    ..named = true
+                    ..required = !e.type.isNullable;
                 });
               }),
             );
@@ -308,9 +364,9 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
           ...props.map((e) {
             return Field((f) {
               f
-                ..name = e.field.name
+                ..name = e.name
                 ..modifier = .final$
-                ..type = Reference(e.field.type.toString());
+                ..type = Reference(e.type.toString());
             });
           }),
         ])
@@ -325,8 +381,8 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
                 props.map((e) {
                   return Parameter((p) {
                     p
-                      ..name = e.field.name!
-                      ..type = Reference(e.field.type.nullable)
+                      ..name = e.name
+                      ..type = Reference(e.type.nullable)
                       ..named = true;
                   });
                 }),
@@ -334,7 +390,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
               ..lambda = true
               ..body = Code(
                 "$className(${props.map((e) {
-                  return '${e.field.name}: ${e.field.name} ?? this.${e.field.name}';
+                  return '${e.name}: ${e.name} ?? this.${e.name}';
                 }).join(',')})",
               );
           }),
@@ -360,23 +416,23 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
               ..body = Code('''
                 if (other is! $className) return this;
                 return $className(${props.map((e) {
-                final name = e.field.name;
+                final name = e.name;
                 return '$name: ${() {
-                  if (e.field.type.element?.name == 'WidgetStateProperty') {
-                    if (e.field.type case ParameterizedType(:final typeArguments)) {
-                      if (typeArguments.isEmpty) throw Exception('WidgetStateProperty without type parameters is not supported: "${e.field.name}"');
+                  if (e.type.element?.name == 'WidgetStateProperty') {
+                    if (e.type case ParameterizedType(:final typeArguments)) {
+                      if (typeArguments.isEmpty) throw Exception('WidgetStateProperty without type parameters is not supported: "${e.name}"');
                       final t = typeArguments.first;
-                      if (!t.isNullable) throw Exception('Only nullable WidgetStateProperty is supported: "${e.field.name}"');
+                      if (!t.isNullable) throw Exception('Only nullable WidgetStateProperty is supported: "${e.name}"');
                       return '''
                           WidgetStateProperty.lerp<$t>(
                             $name,
                             other.$name,
                             t,
                             ${t.nonNull}.lerp,
-                          )${e.field.type.isNullable ? '' : '!'}''';
+                          )${e.type.isNullable ? '' : '!'}''';
                     }
                   }
-                  if (e.isFramework) return '${e.field.type.nonNull}.lerp($name, other.$name, t)${e.field.type.isNullable ? '' : '!'}';
+                  if (e.isFramework) return '${e.type.nonNull}.lerp($name, other.$name, t)${e.type.isNullable ? '' : '!'}';
                   if (e.lerp case final fn?) return '$fn($name, other.$name, t)';
                   return 't < 0.5 ? $name : other.$name';
                 }()}';
@@ -463,8 +519,8 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
                 )
                 ..body = Code('''
               copyWith(
-              ${props.map((p) {
-                  return '${p.field.name}: widget.${p.field.name}';
+              ${props.where((e) => !e.isThemeOnly).map((p) {
+                  return '${p.name}: widget.${p.name}';
                 }).join(',')}
               )''');
             }),
@@ -528,7 +584,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
                 if (other.runtimeType != runtimeType) return false;
                 return other is $className &&
                 ${props.map((e) {
-                  return "other.${e.field.name} == ${e.field.name}";
+                  return "other.${e.name} == ${e.name}";
                 }).join('&&')};''');
             }),
 
@@ -545,13 +601,13 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
                 m.body = Code('''
                 Object.hashAll([
                   runtimeType,
-                  ${props.map((e) => e.field.name).join(', ')}
+                  ${props.map((e) => e.name).join(', ')}
                 ])''');
               } else {
                 m.body = Code('''
                 Object.hash(
                   runtimeType,
-                  ${props.map((e) => e.field.name).join(', ')}
+                  ${props.map((e) => e.name).join(', ')}
                 )''');
               }
             }),
@@ -574,7 +630,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
                 super.debugFillProperties(properties);
                 properties..
                 ${props.map((e) {
-                  return "add(DiagnosticsProperty<${e.field.type.nonNull}>('${e.field.name}', ${e.field.name}))";
+                  return "add(DiagnosticsProperty<${e.type.nonNull}>('${e.name}', ${e.name}))";
                 }).join('..')};''');
             }),
         ]);

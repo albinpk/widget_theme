@@ -4,7 +4,11 @@ import 'package:widget_theme_annotation/widget_theme_annotation.dart';
 
 part 'main.g.dart';
 
-@widgetTheme
+@WidgetTheme(
+  fields: [
+    ThemeField<double?>('a'), // TODO(albin): lerp
+  ],
+)
 class MyWidget extends StatelessWidget {
   const MyWidget({
     this.padding,
@@ -39,7 +43,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         extensions: const [
-          MyWidgetTheme(color: Colors.red),
+          MyWidgetTheme(color: Colors.red, a: 0),
         ],
       ),
       home: const Scaffold(
