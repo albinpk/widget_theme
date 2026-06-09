@@ -8,29 +8,29 @@ part of 'main.dart';
 
 @immutable
 class MyWidgetTheme extends ThemeExtension<MyWidgetTheme> with Diagnosticable {
-  const MyWidgetTheme({this.a, this.color, this.padding});
-
-  final double? a;
+  const MyWidgetTheme({this.color, this.padding, this.readOnly});
 
   final Color? color;
 
   final EdgeInsets? padding;
 
+  final bool? readOnly;
+
   @override
-  MyWidgetTheme copyWith({double? a, Color? color, EdgeInsets? padding}) =>
+  MyWidgetTheme copyWith({Color? color, EdgeInsets? padding, bool? readOnly}) =>
       MyWidgetTheme(
-        a: a ?? this.a,
         color: color ?? this.color,
         padding: padding ?? this.padding,
+        readOnly: readOnly ?? this.readOnly,
       );
 
   @override
   MyWidgetTheme lerp(MyWidgetTheme? other, double t) {
     if (other is! MyWidgetTheme) return this;
     return MyWidgetTheme(
-      a: t < 0.5 ? a : other.a,
       color: Color.lerp(color, other.color, t),
       padding: EdgeInsets.lerp(padding, other.padding, t),
+      readOnly: t < 0.5 ? readOnly : other.readOnly,
     );
   }
 
@@ -46,8 +46,11 @@ class MyWidgetTheme extends ThemeExtension<MyWidgetTheme> with Diagnosticable {
   }
 
   // ignore: unused_element
-  MyWidgetTheme _mergeWidget(MyWidget widget) =>
-      copyWith(color: widget.color, padding: widget.padding);
+  MyWidgetTheme _mergeWidget(MyWidget widget) => copyWith(
+    color: widget.color,
+    padding: widget.padding,
+    readOnly: widget.readOnly,
+  );
 
   static Widget overrideWith({
     required MyWidgetTheme data,
@@ -64,21 +67,21 @@ class MyWidgetTheme extends ThemeExtension<MyWidgetTheme> with Diagnosticable {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
     return other is MyWidgetTheme &&
-        other.a == a &&
         other.color == color &&
-        other.padding == padding;
+        other.padding == padding &&
+        other.readOnly == readOnly;
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, a, color, padding);
+  int get hashCode => Object.hash(runtimeType, color, padding, readOnly);
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties
-      ..add(DiagnosticsProperty<double>('a', a))
       ..add(DiagnosticsProperty<Color>('color', color))
-      ..add(DiagnosticsProperty<EdgeInsets>('padding', padding));
+      ..add(DiagnosticsProperty<EdgeInsets>('padding', padding))
+      ..add(DiagnosticsProperty<bool>('readOnly', readOnly));
   }
 }
 

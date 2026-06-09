@@ -61,9 +61,11 @@ class WidgetTheme {
 const widgetTheme = WidgetTheme();
 
 class ThemeField<T> {
-  const ThemeField(this.name);
+  const ThemeField(this.name, {this.lerp});
 
   final String name;
+
+  final LerpFn<T>? lerp;
 }
 
 /// Annotation to exclude a field from the theme.
@@ -84,8 +86,10 @@ class ThemeInclude<T extends Object> {
   ///
   /// By default, the generated `lerp` method will simply snap between the
   /// values at `t < 0.5` rather than smoothly interpolating.
-  final T? Function(T? a, T? b, double t)? lerp;
+  final LerpFn<T>? lerp;
 }
 
 /// Annotation instance of [ThemeInclude].
 const ThemeInclude<Object> themeInclude = ThemeInclude();
+
+typedef LerpFn<T> = T? Function(T? a, T? b, double t);

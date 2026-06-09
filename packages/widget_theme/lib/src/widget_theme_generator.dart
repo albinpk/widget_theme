@@ -1,3 +1,4 @@
+import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
@@ -253,7 +254,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
             type: type,
             isFramework: false,
             isThemeOnly: true,
-            lerp: null,
+            lerp: _getLerpName(f.getField('lerp')),
           ));
         }
       }
@@ -264,9 +265,15 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
           !f.hasInitializer &&
           f.type.isNullable &&
           !themeExcludeChecker.hasAnnotationOfExact(f)) {
+        void checkThemeFields() {
+          final i = props.indexWhere((p) => p.isThemeOnly && p.name == f.name!);
+          if (i >= 0) props.removeAt(i);
+        }
+
         final displayString = f.type.nonNull;
         if (lerpTypes.contains(displayString) ||
             displayString.startsWith('WidgetStateProperty<')) {
+          checkThemeFields();
           props.add((
             name: f.name!,
             type: f.type,
@@ -276,26 +283,28 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
           ));
         } else if (themeIncludeChecker.firstAnnotationOfExact(f)
             case final meta?) {
-          String? lerpName;
-          if (meta.getField('lerp')?.toFunctionValue() case final fn?
-              when fn.name != null) {
-            if (fn.enclosingElement case ClassElement(:final name)) {
-              lerpName = '${name!}.${fn.name}';
-            } else {
-              lerpName = fn.name;
-            }
-          }
+          checkThemeFields();
           props.add((
             name: f.name!,
             type: f.type,
             isFramework: false,
             isThemeOnly: false,
-            lerp: lerpName,
+            lerp: _getLerpName(meta.getField('lerp')),
           ));
         }
       }
     }
     return props;
+  }
+
+  String? _getLerpName(DartObject? field) {
+    if (field?.toFunctionValue() case final fn? when fn.name != null) {
+      if (fn.enclosingElement case ClassElement(:final name)) {
+        return '${name!}.${fn.name}';
+      }
+      return fn.name;
+    }
+    return null;
   }
 
   Class _buildThemeExtensionClass({
