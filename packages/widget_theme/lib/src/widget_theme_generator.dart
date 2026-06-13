@@ -267,7 +267,14 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
           !themeExcludeChecker.hasAnnotationOfExact(f)) {
         void checkThemeFields() {
           final i = props.indexWhere((p) => p.isThemeOnly && p.name == f.name!);
-          if (i >= 0) props.removeAt(i);
+          if (i == -1) return;
+          if (props[i].type.nonNull != f.type.nonNull) {
+            throw Exception(
+              'The type of field "${f.name}" in "${element.name}" must match '
+              'the type of field "${f.name}" in the @$WidgetTheme annotation".',
+            );
+          }
+          props.removeAt(i);
         }
 
         final displayString = f.type.nonNull;
@@ -314,7 +321,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
     required WidgetTheme meta,
   }) {
     final widgetName = element.name!;
-    final className = meta.name ?? '${element.name!}Theme';
+    final className = meta.name ?? '${widgetName}Theme';
     final props = _getProps(element, annotation);
     final docs = meta.docs ?? true;
 
