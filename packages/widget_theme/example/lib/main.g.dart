@@ -27,22 +27,27 @@ part of 'main.dart';
 @immutable
 class MyWidgetTheme extends ThemeExtension<MyWidgetTheme> with Diagnosticable {
   /// Create instance of [MyWidgetTheme].
-  const MyWidgetTheme({this.color, this.padding});
+  const MyWidgetTheme({this.enabled, this.color, this.padding});
+
+  final bool? enabled;
 
   final Color? color;
 
   final EdgeInsets? padding;
 
   @override
-  MyWidgetTheme copyWith({Color? color, EdgeInsets? padding}) => MyWidgetTheme(
-    color: color ?? this.color,
-    padding: padding ?? this.padding,
-  );
+  MyWidgetTheme copyWith({bool? enabled, Color? color, EdgeInsets? padding}) =>
+      MyWidgetTheme(
+        enabled: enabled ?? this.enabled,
+        color: color ?? this.color,
+        padding: padding ?? this.padding,
+      );
 
   @override
   MyWidgetTheme lerp(MyWidgetTheme? other, double t) {
     if (other is! MyWidgetTheme) return this;
     return MyWidgetTheme(
+      enabled: t < 0.5 ? enabled : other.enabled,
       color: Color.lerp(color, other.color, t),
       padding: EdgeInsets.lerp(padding, other.padding, t),
     );
@@ -90,17 +95,19 @@ class MyWidgetTheme extends ThemeExtension<MyWidgetTheme> with Diagnosticable {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
     return other is MyWidgetTheme &&
+        other.enabled == enabled &&
         other.color == color &&
         other.padding == padding;
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, color, padding);
+  int get hashCode => Object.hash(runtimeType, enabled, color, padding);
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties
+      ..add(DiagnosticsProperty<bool>('enabled', enabled))
       ..add(DiagnosticsProperty<Color>('color', color))
       ..add(DiagnosticsProperty<EdgeInsets>('padding', padding));
   }

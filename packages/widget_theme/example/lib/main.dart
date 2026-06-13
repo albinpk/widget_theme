@@ -4,7 +4,7 @@ import 'package:widget_theme_annotation/widget_theme_annotation.dart';
 
 part 'main.g.dart';
 
-@widgetTheme
+@WidgetTheme(fields: [ThemeField<bool?>(#enabled)])
 class MyWidget extends StatelessWidget {
   const MyWidget({
     this.padding,

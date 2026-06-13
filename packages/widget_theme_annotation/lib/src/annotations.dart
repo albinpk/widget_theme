@@ -14,6 +14,7 @@ class WidgetTheme {
     this.buildContextExtension,
     this.themeDataExtension,
     this.docs,
+    this.fields = const [],
   });
 
   /// Name of the theme extension.
@@ -52,10 +53,49 @@ class WidgetTheme {
   /// Whether to generate documentation.
   /// Default is true.
   final bool? docs;
+
+  /// Additional fields to include in the generated theme.
+  ///
+  /// These fields are generated alongside fields inferred from the widget's
+  /// properties. This is useful for theme-only configuration that is not
+  /// represented by a widget field.
+  final List<ThemeField<dynamic>> fields;
 }
 
 /// Annotation instance of [WidgetTheme].
 const widgetTheme = WidgetTheme();
+
+/// Defines an additional field to generate in the theme.
+///
+/// The generated field is not required to exist on the widget itself,
+/// allowing theme-only configuration to be added to the generated
+/// `ThemeExtension`.
+class ThemeField<T> {
+  /// Creates a [ThemeField].
+  const ThemeField(this.name, {this.lerp});
+
+  /// Name of the generated theme field.
+  ///
+  /// For example:
+  ///
+  /// ```dart
+  /// ThemeField<Color?>(#hoverColor)
+  /// ```
+  ///
+  /// generates:
+  ///
+  /// ```dart
+  /// final Color? hoverColor;
+  /// ```
+  final Symbol name;
+
+  /// Custom interpolation function used by the generated `lerp` method.
+  ///
+  /// If omitted, the generator will use a built-in lerp implementation when
+  /// available for the field type. Otherwise, values will snap between
+  /// instances based on the interpolation factor.
+  final LerpFn<T>? lerp;
+}
 
 /// Annotation to exclude a field from the theme.
 @Target({.field})
@@ -75,8 +115,11 @@ class ThemeInclude<T extends Object> {
   ///
   /// By default, the generated `lerp` method will simply snap between the
   /// values at `t < 0.5` rather than smoothly interpolating.
-  final T? Function(T? a, T? b, double t)? lerp;
+  final LerpFn<T>? lerp;
 }
 
 /// Annotation instance of [ThemeInclude].
 const ThemeInclude<Object> themeInclude = ThemeInclude();
+
+/// Custom lerp function used by the generated `lerp` method.
+typedef LerpFn<T> = T? Function(T? a, T? b, double t);
