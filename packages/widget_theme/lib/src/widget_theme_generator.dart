@@ -229,7 +229,7 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
     final props = <_Prop>[];
 
     for (final f in annotation.read('fields').listValue) {
-      final name = f.getField('name')!.toStringValue()!;
+      final name = f.getField('name')!.toSymbolValue()!;
       if (!fieldNameRegExp.hasMatch(name)) {
         throw Exception('Invalid field name: "$name"');
       }

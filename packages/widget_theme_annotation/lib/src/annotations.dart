@@ -63,7 +63,7 @@ const widgetTheme = WidgetTheme();
 class ThemeField<T> {
   const ThemeField(this.name, {this.lerp});
 
-  final String name;
+  final Symbol name;
 
   final LerpFn<T>? lerp;
 }

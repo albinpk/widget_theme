@@ -5,8 +5,8 @@ import 'package:widget_theme_annotation/widget_theme_annotation.dart';
 part 'main.g.dart';
 
 const List<ThemeField<Object?>> fields = [
-  ThemeField<bool?>('readOnly'),
-  ThemeField<Color?>('color'),
+  ThemeField<bool?>(#readOnly),
+  ThemeField<Color?>(#color),
 ];
 
 @WidgetTheme(fields: fields)
