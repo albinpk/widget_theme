@@ -2,6 +2,70 @@ import 'package:meta/meta_meta.dart';
 
 /// Annotation used to trigger code generation for a widget theme.
 @Target({.classType})
+class WidgetThemeExtension {
+  /// Creates a [WidgetTheme] annotation.
+  const WidgetThemeExtension({
+    this.name,
+    this.staticAccessor,
+    this.mergeWidgetHelper,
+    this.overrideWithHelper,
+    this.diagnosticable,
+    this.equals,
+    this.buildContextExtension,
+    this.themeDataExtension,
+    this.docs,
+    this.fields = const [],
+  });
+
+  /// Name of the theme extension.
+  /// By default, widget name + 'Theme'.
+  final String? name;
+
+  /// Whether to generate static helper methods `of` and `maybeOf`
+  /// for the theme extension. Default is true.
+  final bool? staticAccessor;
+
+  /// Whether to generate merge helper method `_mergeWidget`.
+  /// Default is true.
+  final bool? mergeWidgetHelper;
+
+  /// Whether to generate override helper method `overrideWith`.
+  /// Default is true.
+  final bool? overrideWithHelper;
+
+  /// Whether to make the theme extension mixin `Diagnosticable`.
+  /// Default is true.
+  final bool? diagnosticable;
+
+  /// Whether to generate equals method `==`.
+  /// This will also generate `hashCode`.
+  /// Default is true.
+  final bool? equals;
+
+  /// Whether to generate a extension on BuildContext that provides the theme.
+  /// Default is true.
+  final bool? buildContextExtension;
+
+  /// Whether to generate a extension on ThemeData that provides the theme.
+  /// Default is true.
+  final bool? themeDataExtension;
+
+  /// Whether to generate documentation.
+  /// Default is true.
+  final bool? docs;
+
+  /// Additional fields to include in the generated theme.
+  ///
+  /// These fields are generated alongside fields inferred from the widget's
+  /// properties. This is useful for theme-only configuration that is not
+  /// represented by a widget field.
+  final List<ThemeField<dynamic>> fields;
+}
+
+const widgetThemeExtension = WidgetThemeExtension();
+
+/// Annotation used to trigger code generation for a widget theme.
+@Target({.classType})
 class WidgetTheme {
   /// Creates a [WidgetTheme] annotation.
   const WidgetTheme({

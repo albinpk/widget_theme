@@ -5,6 +5,7 @@ import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:source_gen/source_gen.dart';
+import 'package:widget_theme/src/extensions.dart';
 import 'package:widget_theme/src/lerp_types.dart';
 import 'package:widget_theme_annotation/widget_theme_annotation.dart';
 
@@ -712,15 +713,6 @@ class WidgetThemeGenerator extends GeneratorForAnnotation<WidgetTheme> {
       );
     });
   }
-}
-
-extension on DartType {
-  bool get isNullable => toString().endsWith('?');
-
-  String get nonNull =>
-      isNullable ? toString().substring(0, toString().length - 1) : toString();
-
-  String get nullable => isNullable ? toString() : '${toString()}?';
 }
 
 extension on ConstantReader {
